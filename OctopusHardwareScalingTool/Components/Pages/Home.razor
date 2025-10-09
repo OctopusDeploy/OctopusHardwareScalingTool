@@ -1,185 +1,305 @@
 @page "/"
 @rendermode InteractiveServer
 
-<PageTitle>Octopus Deploy - Hardware Scaling Calculator</PageTitle>
+<PageTitle>Octopus Deploy - Hardware Sizing Calculator</PageTitle>
 
 <div class="hardware-scaling-calculator">
     <div class="hero-section">
         <div class="container">
-            <h1>Will Octopus Perform Well For You?</h1>
+            <h1>Octopus Deploy Hardware Sizing Calculator</h1>
             <p class="lead">
-                Describe your typical deployment scenario and find out if you'll experience optimal performance
-                or if you should consider upgrading your hardware resources.
+                Size your infrastructure correctly for your deployment needs.
+                Tell us about your deployment scenario and we'll help you determine the right hardware specifications.
             </p>
         </div>
     </div>
 
     <div class="calculator-section">
         <div class="container">
+            <!-- Preset Selector -->
+            <div class="preset-selector">
+                <h3>Quick Start: Choose a Preset Configuration</h3>
+                <div class="preset-buttons">
+                    <button class="preset-btn @(selectedPreset == "retail" ? "active" : "")" @onclick="@(() => ApplyPreset("retail"))">
+                        🏪 Retail Chain
+                        <span class="preset-desc">Many locations, multiple devices each</span>
+                    </button>
+                    <button class="preset-btn @(selectedPreset == "regional" ? "active" : "")" @onclick="@(() => ApplyPreset("regional"))">
+                        🏢 Regional Business
+                        <span class="preset-desc">Moderate locations, more devices</span>
+                    </button>
+                    <button class="preset-btn @(selectedPreset == "enterprise" ? "active" : "")" @onclick="@(() => ApplyPreset("enterprise"))">
+                        🏛️ Enterprise
+                        <span class="preset-desc">Few locations, many devices</span>
+                    </button>
+                    <button class="preset-btn @(selectedPreset == "custom" ? "active" : "")" @onclick="@(() => ApplyPreset("custom"))">
+                        ⚙️ Custom
+                        <span class="preset-desc">Configure your own scenario</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Step 1: Describe Your Deployment Scenario -->
             <div class="calculator-card">
                 <h2>Step 1: Describe Your Deployment Scenario</h2>
-                <p class="section-intro">Tell us about your typical deployment workload so we can assess performance.</p>
+                <p class="section-intro">Tell us about your deployment infrastructure and nightly maintenance window.</p>
 
                 <div class="input-section">
                     <div class="input-group">
-                        <label for="parallelTargets" class="form-label">
-                            <strong>Parallel Targets per Deployment</strong>
-                            <span class="help-text">How many deployment targets execute simultaneously in each deployment?</span>
+                        <label for="numLocations" class="form-label">
+                            <strong>Number of Locations/Stores</strong>
+                            <span class="help-text">How many physical locations do you deploy to?</span>
                         </label>
                         <input type="range"
-                               id="parallelTargets"
+                               id="numLocations"
                                class="form-range"
                                min="1"
-                               max="20"
+                               max="500"
                                step="1"
-                               @bind="selectedParallelTargets"
+                               @bind="selectedLocations"
                                @bind:event="oninput" />
-                        <div class="range-value">@selectedParallelTargets targets</div>
+                        <div class="range-value">@selectedLocations locations</div>
                     </div>
 
                     <div class="input-group">
-                        <label for="numDeployments" class="form-label">
-                            <strong>Deployments in a Typical Batch</strong>
-                            <span class="help-text">How many deployments do you typically run together?</span>
+                        <label for="devicesPerLocation" class="form-label">
+                            <strong>Devices per Location</strong>
+                            <span class="help-text">Average number of devices (POS, servers, etc.) at each location</span>
                         </label>
                         <input type="range"
-                               id="numDeployments"
+                               id="devicesPerLocation"
                                class="form-range"
-                               min="10"
-                               max="200"
-                               step="10"
-                               @bind="selectedNumDeployments"
+                               min="1"
+                               max="50"
+                               step="1"
+                               @bind="selectedDevicesPerLocation"
                                @bind:event="oninput" />
-                        <div class="range-value">@selectedNumDeployments deployments</div>
+                        <div class="range-value">@selectedDevicesPerLocation devices</div>
                     </div>
 
                     <div class="input-group">
-                        <label for="taskCap" class="form-label">
-                            <strong>Task Cap Setting</strong>
-                            <span class="help-text">Maximum concurrent deployments (your Octopus Server task cap setting)</span>
-                        </label>
-                        <select id="taskCap" class="form-select" @onchange="OnTaskCapChanged">
-                            <option value="5" selected="@(selectedTaskCap == 5)">5 concurrent deployments</option>
-                            <option value="10" selected="@(selectedTaskCap == 10)">10 concurrent deployments</option>
-                            <option value="20" selected="@(selectedTaskCap == 20)">20 concurrent deployments</option>
-                            <option value="40" selected="@(selectedTaskCap == 40)">40 concurrent deployments</option>
-                            <option value="80" selected="@(selectedTaskCap == 80)">80 concurrent deployments</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 2: Performance Assessment -->
-            <div class="calculator-card">
-                <h2>Step 2: Your Expected Performance</h2>
-                <p class="section-intro">Based on your deployment scenario with our <strong>Standard Plan (2 CPU cores)</strong>:</p>
-
-                <div class="performance-status-container">
-                    <div class="performance-badge @GetPerformanceBadgeClass()">
-                        <div class="performance-icon">@GetPerformanceIcon()</div>
-                        <div class="performance-content">
-                            <h3>@GetPerformanceTitle()</h3>
-                            <p>@GetPerformanceDescription()</p>
-                        </div>
-                    </div>
-
-                    <div class="performance-details">
-                        <div class="performance-metric">
-                            <span class="metric-label">VM CPU Utilization</span>
-                            <div class="metric-bar-container">
-                                <div class="metric-bar" style="width: @estimatedVmCpu%"></div>
-                            </div>
-                            <span class="metric-value">@estimatedVmCpu%</span>
-                        </div>
-                        <div class="performance-metric">
-                            <span class="metric-label">Database CPU Utilization</span>
-                            <div class="metric-bar-container">
-                                <div class="metric-bar" style="width: @estimatedDbCpu%"></div>
-                            </div>
-                            <span class="metric-value">@estimatedDbCpu%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step 3: Upgrade Path (conditional) -->
-            @if (currentPerformanceLevel != PerformanceLevel.Optimal)
-            {
-                <div class="calculator-card upgrade-section">
-                    <h2>Step 3: Improve Your Performance</h2>
-                    <p class="section-intro">
-                        @if (currentPerformanceLevel == PerformanceLevel.Degraded)
-                        {
-                            <text>Your deployment scenario will experience degraded performance on 2 cores. Consider upgrading to improve performance.</text>
-                        }
-                        else
-                        {
-                            <text>Your deployment scenario is acceptable but could be optimized. Consider upgrading for better headroom.</text>
-                        }
-                    </p>
-
-                    <div class="upgrade-controls">
-                        <label for="upgradeCores" class="form-label">
-                            <strong>Select CPU Cores</strong>
-                            <span class="help-text">See how additional cores improve your performance</span>
+                        <label for="applicationsDeployed" class="form-label">
+                            <strong>Applications to Deploy</strong>
+                            <span class="help-text">How many applications are deployed together?</span>
                         </label>
                         <input type="range"
-                               id="upgradeCores"
-                               class="form-range upgrade-slider"
-                               min="2"
+                               id="applicationsDeployed"
+                               class="form-range"
+                               min="1"
+                               max="10"
+                               step="1"
+                               @bind="selectedApplications"
+                               @bind:event="oninput" />
+                        <div class="range-value">@selectedApplications applications</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="deploymentWindow" class="form-label">
+                            <strong>Deployment Window</strong>
+                            <span class="help-text">Hours available for nightly deployments</span>
+                        </label>
+                        <input type="range"
+                               id="deploymentWindow"
+                               class="form-range"
+                               min="1"
                                max="8"
                                step="0.5"
-                               @bind="upgradeCpuCores"
+                               @bind="selectedDeploymentWindow"
                                @bind:event="oninput" />
-                        <div class="range-value-large">@upgradeCpuCores Cores</div>
+                        <div class="range-value">@selectedDeploymentWindow hours</div>
                     </div>
+                </div>
 
-                    <div class="upgrade-comparison">
-                        <div class="comparison-column">
-                            <h4>Current (2 Cores)</h4>
-                            <div class="comparison-badge @GetPerformanceBadgeClass()">
-                                @GetPerformanceIcon() @GetPerformanceTitle()
-                            </div>
-                            <div class="comparison-metrics">
-                                <div>VM CPU: @estimatedVmCpu%</div>
-                                <div>DB CPU: @estimatedDbCpu%</div>
-                            </div>
+                <div class="scenario-summary">
+                    <h4>Your Deployment Scenario:</h4>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-label">Total Deployment Targets:</span>
+                            <span class="summary-value">@(selectedLocations * selectedDevicesPerLocation)</span>
                         </div>
-
-                        <div class="comparison-arrow">→</div>
-
-                        <div class="comparison-column">
-                            <h4>Upgraded (@upgradeCpuCores Cores)</h4>
-                            <div class="comparison-badge @GetUpgradePerformanceBadgeClass()">
-                                @GetUpgradePerformanceIcon() @GetUpgradePerformanceTitle()
-                            </div>
-                            <div class="comparison-metrics">
-                                <div>VM CPU: @upgradedVmCpu%</div>
-                                <div>DB CPU: @upgradedDbCpu%</div>
-                            </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Total Application Deployments:</span>
+                            <span class="summary-value">@(selectedLocations * selectedApplications)</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Deployment Window:</span>
+                            <span class="summary-value">@selectedDeploymentWindow hours (nightly)</span>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    @if (GetUpgradePerformanceLevel() == PerformanceLevel.Optimal)
+            <!-- Step 2: Infrastructure Requirements -->
+            <div class="calculator-card">
+                <h2>Step 2: Your Infrastructure Requirements</h2>
+                <p class="section-intro">Based on your deployment scenario, here's what you'll need:</p>
+
+                <div class="requirements-container">
+                    <div class="requirement-highlight">
+                        <h3>Recommended Hardware Specifications</h3>
+                        <div class="hardware-recommendation">
+                            <div class="hardware-item">
+                                <span class="hardware-icon">💻</span>
+                                <div class="hardware-details">
+                                    <strong>Minimum CPU Cores Required:</strong>
+                                    <span class="hardware-value">@recommendedCores cores</span>
+                                </div>
+                            </div>
+                            <div class="hardware-item">
+                                <span class="hardware-icon">💾</span>
+                                <div class="hardware-details">
+                                    <strong>Recommended RAM:</strong>
+                                    <span class="hardware-value">@recommendedRam GB</span>
+                                </div>
+                            </div>
+                            <div class="hardware-item">
+                                <span class="hardware-icon">💿</span>
+                                <div class="hardware-details">
+                                    <strong>Database Server Cores:</strong>
+                                    <span class="hardware-value">@recommendedDbCores cores</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deployment-window-analysis">
+                        <h4>Deployment Window Feasibility</h4>
+                        <div class="window-status @GetWindowStatusClass()">
+                            <div class="window-icon">@GetWindowStatusIcon()</div>
+                            <div class="window-details">
+                                <strong>@GetWindowStatusTitle()</strong>
+                                <p>Estimated time to deploy to all @selectedLocations locations: <strong>@estimatedDeploymentTime.ToString("F1") hours</strong></p>
+                                @if (estimatedDeploymentTime > selectedDeploymentWindow)
+                                {
+                                    <p class="warning-text">⚠️ Your deployment will take @((estimatedDeploymentTime - selectedDeploymentWindow).ToString("F1")) hours longer than your window allows!</p>
+                                }
+                                else
+                                {
+                                    <p class="success-text">✅ Deployments will complete with @((selectedDeploymentWindow - estimatedDeploymentTime).ToString("F1")) hours to spare.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="performance-breakdown">
+                        <h4>Expected Resource Utilization</h4>
+                        <div class="performance-details">
+                            <div class="performance-metric">
+                                <span class="metric-label">Application Server CPU</span>
+                                <div class="metric-bar-container">
+                                    <div class="metric-bar @GetMetricBarClass(estimatedVmCpu)" style="width: @estimatedVmCpu%"></div>
+                                </div>
+                                <span class="metric-value">@estimatedVmCpu%</span>
+                            </div>
+                            <div class="performance-metric">
+                                <span class="metric-label">Database Server CPU</span>
+                                <div class="metric-bar-container">
+                                    <div class="metric-bar @GetMetricBarClass(estimatedDbCpu)" style="width: @estimatedDbCpu%"></div>
+                                </div>
+                                <span class="metric-value">@estimatedDbCpu%</span>
+                            </div>
+                            <div class="performance-metric">
+                                <span class="metric-label">Network Bandwidth Usage</span>
+                                <div class="metric-bar-container">
+                                    <div class="metric-bar @GetMetricBarClass(estimatedNetworkUsage)" style="width: @estimatedNetworkUsage%"></div>
+                                </div>
+                                <span class="metric-value">@estimatedNetworkUsage%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Fine-tune Your Hardware -->
+            <div class="calculator-card">
+                <h2>Step 3: Fine-tune Your Hardware Configuration</h2>
+                <p class="section-intro">Adjust your available hardware to see how it affects deployment times and performance.</p>
+
+                <div class="hardware-tuning">
+                    <div class="input-group">
+                        <label for="cpuCores" class="form-label">
+                            <strong>Available CPU Cores</strong>
+                            <span class="help-text">How many CPU cores can you allocate to your Octopus Server?</span>
+                        </label>
+                        <input type="range"
+                               id="cpuCores"
+                               class="form-range"
+                               min="2"
+                               max="32"
+                               step="1"
+                               @bind="selectedCpuCores"
+                               @bind:event="oninput" />
+                        <div class="range-value">@selectedCpuCores cores</div>
+                    </div>
+
+                    <div class="tuning-impact">
+                        <h4>Impact on Your Deployments</h4>
+                        <div class="impact-grid">
+                            <div class="impact-item @(selectedCpuCores >= recommendedCores ? "positive" : "negative")">
+                                <span class="impact-label">Hardware Status:</span>
+                                <span class="impact-value">
+                                    @if (selectedCpuCores >= recommendedCores)
+                                    {
+                                        <text>✅ Meets Requirements</text>
+                                    }
+                                    else
+                                    {
+                                        <text>⚠️ Below Recommended (@(recommendedCores - selectedCpuCores) more cores needed)</text>
+                                    }
+                                </span>
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Deployment Time:</span>
+                                <span class="impact-value">@estimatedDeploymentTime.ToString("F1") hours</span>
+                            </div>
+                            <div class="impact-item @(estimatedDeploymentTime <= selectedDeploymentWindow ? "positive" : "negative")">
+                                <span class="impact-label">Fits in Window:</span>
+                                <span class="impact-value">
+                                    @if (estimatedDeploymentTime <= selectedDeploymentWindow)
+                                    {
+                                        <text>✅ Yes (@((selectedDeploymentWindow - estimatedDeploymentTime).ToString("F1"))h buffer)</text>
+                                    }
+                                    else
+                                    {
+                                        <text>❌ No (@((estimatedDeploymentTime - selectedDeploymentWindow).ToString("F1"))h over)</text>
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (selectedCpuCores < recommendedCores)
                     {
-                        <div class="recommendation-card success">
-                            <h4>✅ Recommended Configuration</h4>
-                            <p>Upgrading to @upgradeCpuCores cores will give you optimal performance with plenty of headroom for growth.</p>
+                        <div class="recommendation-card warning">
+                            <h4>⚠️ Hardware Upgrade Recommended</h4>
+                            <p>
+                                Your current configuration of @selectedCpuCores cores is below the recommended @recommendedCores cores
+                                for your deployment scenario. This may result in:
+                            </p>
+                            <ul>
+                                <li>Deployments taking longer than your maintenance window</li>
+                                <li>Queuing delays during peak deployment times</li>
+                                <li>Poor performance when deploying to multiple locations simultaneously</li>
+                            </ul>
+                        </div>
+                    }
+                    else if (selectedCpuCores > recommendedCores + 8)
+                    {
+                        <div class="recommendation-card info">
+                            <h4>💡 Optimization Opportunity</h4>
+                            <p>
+                                You have @(selectedCpuCores - recommendedCores) more cores than needed for your current scenario.
+                                Consider using the extra capacity for:
+                            </p>
+                            <ul>
+                                <li>Running more concurrent deployments</li>
+                                <li>Reducing deployment times further</li>
+                                <li>Handling future growth without hardware changes</li>
+                            </ul>
                         </div>
                     }
                 </div>
-            }
-            else
-            {
-                <div class="calculator-card success-section">
-                    <div class="success-message">
-                        <div class="success-icon">🎉</div>
-                        <h3>Perfect! You're All Set</h3>
-                        <p>Your deployment scenario will run great on our Standard Plan (2 cores). You have plenty of headroom for occasional spikes.</p>
-                    </div>
-                </div>
-            }
+            </div>
 
             <!-- Educational Content -->
             <div class="info-section">
@@ -213,73 +333,92 @@
 </div>
 
 @code {
-    // User inputs with property setters
-    private int _selectedParallelTargets = 10;
-    private int selectedParallelTargets
+    // Location-centric inputs with property setters
+    private string selectedPreset = "custom";
+
+    private int _selectedLocations = 50;
+    private int selectedLocations
     {
-        get => _selectedParallelTargets;
+        get => _selectedLocations;
         set
         {
-            if (_selectedParallelTargets != value)
+            if (_selectedLocations != value)
             {
-                _selectedParallelTargets = value;
+                _selectedLocations = value;
                 CalculatePerformance();
             }
         }
     }
 
-    private int _selectedNumDeployments = 100;
-    private int selectedNumDeployments
+    private int _selectedDevicesPerLocation = 10;
+    private int selectedDevicesPerLocation
     {
-        get => _selectedNumDeployments;
+        get => _selectedDevicesPerLocation;
         set
         {
-            if (_selectedNumDeployments != value)
+            if (_selectedDevicesPerLocation != value)
             {
-                _selectedNumDeployments = value;
+                _selectedDevicesPerLocation = value;
                 CalculatePerformance();
             }
         }
     }
 
-    private int _selectedTaskCap = 20;
-    private int selectedTaskCap
+    private int _selectedApplications = 3;
+    private int selectedApplications
     {
-        get => _selectedTaskCap;
+        get => _selectedApplications;
         set
         {
-            if (_selectedTaskCap != value)
+            if (_selectedApplications != value)
             {
-                _selectedTaskCap = value;
+                _selectedApplications = value;
                 CalculatePerformance();
             }
         }
     }
 
-    // Performance calculation for 2 cores (baseline)
+    private double _selectedDeploymentWindow = 4.0;
+    private double selectedDeploymentWindow
+    {
+        get => _selectedDeploymentWindow;
+        set
+        {
+            if (Math.Abs(_selectedDeploymentWindow - value) > 0.01)
+            {
+                _selectedDeploymentWindow = value;
+                CalculatePerformance();
+            }
+        }
+    }
+
+    private int _selectedCpuCores = 4;
+    private int selectedCpuCores
+    {
+        get => _selectedCpuCores;
+        set
+        {
+            if (_selectedCpuCores != value)
+            {
+                _selectedCpuCores = value;
+                CalculatePerformance();
+            }
+        }
+    }
+
+    // Infrastructure recommendations
+    private int recommendedCores = 8;
+    private int recommendedRam = 16;
+    private int recommendedDbCores = 4;
+
+    // Performance metrics
     private int estimatedVmCpu = 35;
     private int estimatedDbCpu = 10;
+    private int estimatedNetworkUsage = 25;
+    private double estimatedDeploymentTime = 2.5;
 
     // Flag to prevent recursion
     private bool _isCalculating = false;
-
-    // Upgrade path with property setter
-    private double _upgradeCpuCores = 4.0;
-    private double upgradeCpuCores
-    {
-        get => _upgradeCpuCores;
-        set
-        {
-            if (Math.Abs(_upgradeCpuCores - value) > 0.01)
-            {
-                _upgradeCpuCores = value;
-                CalculatePerformance();
-            }
-        }
-    }
-
-    private int upgradedVmCpu = 0;
-    private int upgradedDbCpu = 0;
 
     private enum PerformanceLevel
     {
@@ -295,14 +434,6 @@
         CalculatePerformance();
     }
 
-    private void OnTaskCapChanged(ChangeEventArgs e)
-    {
-        if (int.TryParse(e.Value?.ToString(), out var taskCap))
-        {
-            selectedTaskCap = taskCap;  // This will now trigger CalculatePerformance() via the setter
-        }
-    }
-
     private void CalculatePerformance()
     {
         // Prevent recursion
@@ -312,51 +443,52 @@
         {
             _isCalculating = true;
 
-            // Calculate for 2 cores (baseline/standard plan)
-            var baseline = CalculateForCores(2.0);
-            estimatedVmCpu = baseline.VmCpu;
-            estimatedDbCpu = baseline.DbCpu;
-            currentPerformanceLevel = GetPerformanceLevelFromCpu(estimatedVmCpu, estimatedDbCpu);
+            // Calculate total deployment workload
+            int totalTargets = _selectedLocations * _selectedDevicesPerLocation;
+            int totalDeployments = _selectedLocations * _selectedApplications;
 
-            // Calculate for upgraded cores
-            var upgraded = CalculateForCores(_upgradeCpuCores);  // Use backing field
-            upgradedVmCpu = upgraded.VmCpu;
-            upgradedDbCpu = upgraded.DbCpu;
+            // Calculate recommended hardware based on workload
+            // Application archetype: 20 steps, DB migrations, 1000 variables
+            // Base: 2 cores can handle 10 targets with 5 concurrent deployments
+            double workloadFactor = (totalTargets / 10.0) * (_selectedApplications / 2.0);
+            recommendedCores = Math.Max(4, (int)Math.Ceiling(2 * Math.Sqrt(workloadFactor)));
+            recommendedRam = recommendedCores * 4; // 4GB per core minimum
+            recommendedDbCores = Math.Max(2, recommendedCores / 2);
+
+            // Calculate performance with selected cores
+            if (_selectedCpuCores > 0)
+            {
+                // Performance calculation based on Application archetype (20 steps)
+                double coreRatio = _selectedCpuCores / (double)recommendedCores;
+
+                // VM CPU usage inversely proportional to available cores
+                estimatedVmCpu = Math.Min(100, (int)(70 / coreRatio));
+
+                // DB CPU affected by concurrent operations
+                estimatedDbCpu = Math.Min(100, (int)(50 / Math.Sqrt(coreRatio)));
+
+                // Network usage based on locations and package size
+                estimatedNetworkUsage = Math.Min(100, (int)(30 * (totalTargets / 100.0)));
+
+                // Deployment time calculation (Application archetype: ~2 min per deployment per target)
+                double baseTimePerDeployment = 2.0 / 60.0; // 2 minutes in hours
+                double parallelism = Math.Min(_selectedCpuCores * 2, totalDeployments);
+                estimatedDeploymentTime = (totalDeployments * baseTimePerDeployment * 20) / parallelism; // 20 steps
+
+                // Adjust for network and edge device constraints
+                if (totalTargets > 100)
+                {
+                    estimatedDeploymentTime *= 1.2; // 20% overhead for coordination
+                }
+            }
+
+            currentPerformanceLevel = GetPerformanceLevelFromCpu(estimatedVmCpu, estimatedDbCpu);
         }
         finally
         {
             _isCalculating = false;
             StateHasChanged();  // Force UI update
         }
-    }
-
-    private (int VmCpu, int DbCpu) CalculateForCores(double cores)
-    {
-        // Base performance data from test results (2 cores, 10 targets, TC20)
-        var baselineData = new
-        {
-            Cores = 2.0,
-            Targets = 10,
-            TaskCap = 20,
-            VmCpu = 35,
-            DbCpu = 10
-        };
-
-        // Calculate scaling factors - use backing fields to avoid triggering property setters
-        var coreScaleFactor = baselineData.Cores / cores;
-        var targetScaleFactor = _selectedParallelTargets / (double)baselineData.Targets;
-        var taskCapScaleFactor = _selectedTaskCap / (double)baselineData.TaskCap;
-
-        // Estimate CPU usage (more parallel work = higher CPU, more cores = lower per-core usage)
-        var workloadFactor = targetScaleFactor * taskCapScaleFactor;
-        var vmCpu = (int)(baselineData.VmCpu * workloadFactor * coreScaleFactor);
-        var dbCpu = (int)(baselineData.DbCpu * workloadFactor * Math.Pow(coreScaleFactor, 0.5));
-
-        // Cap CPU estimates at 100%
-        vmCpu = Math.Min(vmCpu, 100);
-        dbCpu = Math.Min(dbCpu, 100);
-
-        return (vmCpu, dbCpu);
     }
 
     private PerformanceLevel GetPerformanceLevelFromCpu(int vmCpu, int dbCpu)
@@ -367,12 +499,79 @@
         return PerformanceLevel.Degraded;
     }
 
-    private PerformanceLevel GetUpgradePerformanceLevel()
+    // Preset configurations
+    private void ApplyPreset(string preset)
     {
-        return GetPerformanceLevelFromCpu(upgradedVmCpu, upgradedDbCpu);
+        selectedPreset = preset;
+        _isCalculating = true; // Prevent multiple recalculations
+
+        switch (preset)
+        {
+            case "retail":
+                _selectedLocations = 100;
+                _selectedDevicesPerLocation = 10;
+                _selectedApplications = 3;
+                _selectedDeploymentWindow = 4.0;
+                break;
+            case "regional":
+                _selectedLocations = 25;
+                _selectedDevicesPerLocation = 20;
+                _selectedApplications = 4;
+                _selectedDeploymentWindow = 6.0;
+                break;
+            case "enterprise":
+                _selectedLocations = 10;
+                _selectedDevicesPerLocation = 50;
+                _selectedApplications = 5;
+                _selectedDeploymentWindow = 8.0;
+                break;
+            case "custom":
+            default:
+                // Keep current values
+                break;
+        }
+
+        _isCalculating = false;
+        CalculatePerformance();
     }
 
-    // Performance badge helpers
+    // Window status helpers
+    private string GetWindowStatusClass()
+    {
+        if (estimatedDeploymentTime <= selectedDeploymentWindow * 0.7)
+            return "window-optimal";
+        if (estimatedDeploymentTime <= selectedDeploymentWindow)
+            return "window-acceptable";
+        return "window-exceeded";
+    }
+
+    private string GetWindowStatusIcon()
+    {
+        if (estimatedDeploymentTime <= selectedDeploymentWindow * 0.7)
+            return "✅";
+        if (estimatedDeploymentTime <= selectedDeploymentWindow)
+            return "⚠️";
+        return "❌";
+    }
+
+    private string GetWindowStatusTitle()
+    {
+        if (estimatedDeploymentTime <= selectedDeploymentWindow * 0.7)
+            return "Deployments fit comfortably in window";
+        if (estimatedDeploymentTime <= selectedDeploymentWindow)
+            return "Deployments fit but with little margin";
+        return "Deployments exceed maintenance window";
+    }
+
+    // Metric bar color helpers
+    private string GetMetricBarClass(int usage)
+    {
+        if (usage < 40) return "metric-bar-optimal";
+        if (usage < 70) return "metric-bar-acceptable";
+        return "metric-bar-degraded";
+    }
+
+    // Performance badge helpers (kept for compatibility)
     private string GetPerformanceBadgeClass()
     {
         return currentPerformanceLevel switch
@@ -413,40 +612,6 @@
             PerformanceLevel.Optimal => "Your deployments will run smoothly with plenty of capacity for growth.",
             PerformanceLevel.Acceptable => "Your deployments will generally work well, but you might experience some slowdowns during peak usage.",
             PerformanceLevel.Degraded => "Your server will struggle with this workload. Expect queueing delays and slower deployments.",
-            _ => ""
-        };
-    }
-
-    // Upgrade badge helpers
-    private string GetUpgradePerformanceBadgeClass()
-    {
-        return GetUpgradePerformanceLevel() switch
-        {
-            PerformanceLevel.Optimal => "badge-optimal",
-            PerformanceLevel.Acceptable => "badge-acceptable",
-            PerformanceLevel.Degraded => "badge-degraded",
-            _ => ""
-        };
-    }
-
-    private string GetUpgradePerformanceIcon()
-    {
-        return GetUpgradePerformanceLevel() switch
-        {
-            PerformanceLevel.Optimal => "🟢",
-            PerformanceLevel.Acceptable => "🟡",
-            PerformanceLevel.Degraded => "🔴",
-            _ => ""
-        };
-    }
-
-    private string GetUpgradePerformanceTitle()
-    {
-        return GetUpgradePerformanceLevel() switch
-        {
-            PerformanceLevel.Optimal => "Optimal",
-            PerformanceLevel.Acceptable => "Acceptable",
-            PerformanceLevel.Degraded => "Degraded",
             _ => ""
         };
     }
