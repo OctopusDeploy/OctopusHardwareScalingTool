@@ -213,17 +213,71 @@
 </div>
 
 @code {
-    // User inputs
-    private int selectedParallelTargets = 10;
-    private int selectedNumDeployments = 100;
-    private int selectedTaskCap = 20;
+    // User inputs with property setters
+    private int _selectedParallelTargets = 10;
+    private int selectedParallelTargets
+    {
+        get => _selectedParallelTargets;
+        set
+        {
+            if (_selectedParallelTargets != value)
+            {
+                _selectedParallelTargets = value;
+                CalculatePerformance();
+            }
+        }
+    }
+
+    private int _selectedNumDeployments = 100;
+    private int selectedNumDeployments
+    {
+        get => _selectedNumDeployments;
+        set
+        {
+            if (_selectedNumDeployments != value)
+            {
+                _selectedNumDeployments = value;
+                CalculatePerformance();
+            }
+        }
+    }
+
+    private int _selectedTaskCap = 20;
+    private int selectedTaskCap
+    {
+        get => _selectedTaskCap;
+        set
+        {
+            if (_selectedTaskCap != value)
+            {
+                _selectedTaskCap = value;
+                CalculatePerformance();
+            }
+        }
+    }
 
     // Performance calculation for 2 cores (baseline)
     private int estimatedVmCpu = 35;
     private int estimatedDbCpu = 10;
 
-    // Upgrade path
-    private double upgradeCpuCores = 4.0;
+    // Flag to prevent recursion
+    private bool _isCalculating = false;
+
+    // Upgrade path with property setter
+    private double _upgradeCpuCores = 4.0;
+    private double upgradeCpuCores
+    {
+        get => _upgradeCpuCores;
+        set
+        {
+            if (Math.Abs(_upgradeCpuCores - value) > 0.01)
+            {
+                _upgradeCpuCores = value;
+                CalculatePerformance();
+            }
+        }
+    }
+
     private int upgradedVmCpu = 0;
     private int upgradedDbCpu = 0;
 
@@ -245,23 +299,35 @@
     {
         if (int.TryParse(e.Value?.ToString(), out var taskCap))
         {
-            selectedTaskCap = taskCap;
-            CalculatePerformance();
+            selectedTaskCap = taskCap;  // This will now trigger CalculatePerformance() via the setter
         }
     }
 
     private void CalculatePerformance()
     {
-        // Calculate for 2 cores (baseline/standard plan)
-        var baseline = CalculateForCores(2.0);
-        estimatedVmCpu = baseline.VmCpu;
-        estimatedDbCpu = baseline.DbCpu;
-        currentPerformanceLevel = GetPerformanceLevelFromCpu(estimatedVmCpu, estimatedDbCpu);
+        // Prevent recursion
+        if (_isCalculating) return;
 
-        // Calculate for upgraded cores
-        var upgraded = CalculateForCores(upgradeCpuCores);
-        upgradedVmCpu = upgraded.VmCpu;
-        upgradedDbCpu = upgraded.DbCpu;
+        try
+        {
+            _isCalculating = true;
+
+            // Calculate for 2 cores (baseline/standard plan)
+            var baseline = CalculateForCores(2.0);
+            estimatedVmCpu = baseline.VmCpu;
+            estimatedDbCpu = baseline.DbCpu;
+            currentPerformanceLevel = GetPerformanceLevelFromCpu(estimatedVmCpu, estimatedDbCpu);
+
+            // Calculate for upgraded cores
+            var upgraded = CalculateForCores(_upgradeCpuCores);  // Use backing field
+            upgradedVmCpu = upgraded.VmCpu;
+            upgradedDbCpu = upgraded.DbCpu;
+        }
+        finally
+        {
+            _isCalculating = false;
+            StateHasChanged();  // Force UI update
+        }
     }
 
     private (int VmCpu, int DbCpu) CalculateForCores(double cores)
@@ -276,10 +342,10 @@
             DbCpu = 10
         };
 
-        // Calculate scaling factors
+        // Calculate scaling factors - use backing fields to avoid triggering property setters
         var coreScaleFactor = baselineData.Cores / cores;
-        var targetScaleFactor = selectedParallelTargets / (double)baselineData.Targets;
-        var taskCapScaleFactor = selectedTaskCap / (double)baselineData.TaskCap;
+        var targetScaleFactor = _selectedParallelTargets / (double)baselineData.Targets;
+        var taskCapScaleFactor = _selectedTaskCap / (double)baselineData.TaskCap;
 
         // Estimate CPU usage (more parallel work = higher CPU, more cores = lower per-core usage)
         var workloadFactor = targetScaleFactor * taskCapScaleFactor;
