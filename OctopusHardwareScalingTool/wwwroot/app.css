@@ -170,11 +170,37 @@ h1:focus {
     margin-top: 0.25rem;
 }
 
-.form-select, .form-range {
+.form-select {
     padding: 0.75rem;
     border: 2px solid #e0e0e0;
     border-radius: 6px;
     font-size: 1rem;
+    color: #0a151e !important;
+    background-color: white !important;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230a151e' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 12px;
+    padding-right: 2.5rem;
+    height: auto;
+    min-height: 44px;
+    line-height: 1.5;
+}
+
+.form-select option {
+    color: #0a151e !important;
+    background-color: white !important;
+    padding: 0.5rem;
+}
+
+.form-range {
+    padding: 0;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
     transition: border-color 0.2s;
 }
 
@@ -375,6 +401,259 @@ h1:focus {
     line-height: 1.7;
 }
 
+/* Section Intro */
+.section-intro {
+    font-size: 1rem;
+    color: #495057;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* Performance Status Container */
+.performance-status-container {
+    margin-top: 2rem;
+}
+
+.performance-badge {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 2.5rem;
+    border-radius: 12px;
+    border: 3px solid;
+    margin-bottom: 2rem;
+    transition: all 0.3s;
+}
+
+.performance-badge.badge-optimal {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+    border-color: #4caf50;
+}
+
+.performance-badge.badge-acceptable {
+    background: linear-gradient(135deg, #fff8e1 0%, #fffbf0 100%);
+    border-color: #ffc107;
+}
+
+.performance-badge.badge-degraded {
+    background: linear-gradient(135deg, #ffebee 0%, #fff5f5 100%);
+    border-color: #f44336;
+}
+
+.performance-icon {
+    font-size: 4rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.performance-content {
+    flex: 1;
+}
+
+.performance-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #0a151e;
+}
+
+.performance-content p {
+    font-size: 1.125rem;
+    margin: 0;
+    color: #495057;
+    line-height: 1.6;
+}
+
+/* Performance Metrics (Progress Bars) */
+.performance-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.performance-metric {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0a151e;
+    min-width: 180px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-bar-container {
+    flex: 1;
+    height: 24px;
+    background: #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.metric-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #0d80d8 0%, #0a66b3 100%);
+    border-radius: 12px;
+    transition: width 0.5s ease;
+}
+
+.metric-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0a151e;
+    min-width: 50px;
+    text-align: right;
+}
+
+/* Upgrade Section */
+.upgrade-section {
+    border: 3px solid #0d80d8;
+    position: relative;
+}
+
+.upgrade-section::before {
+    content: "💡 Upgrade Recommended";
+    position: absolute;
+    top: -15px;
+    left: 2rem;
+    background: #0d80d8;
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.upgrade-controls {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.upgrade-slider {
+    height: 12px !important;
+    margin: 1.5rem 0;
+}
+
+.range-value-large {
+    margin-top: 1rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0d80d8;
+    text-align: center;
+}
+
+/* Upgrade Comparison */
+.upgrade-comparison {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin: 2rem 0;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.comparison-column {
+    text-align: center;
+}
+
+.comparison-column h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comparison-badge {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    border: 2px solid;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.comparison-badge.badge-optimal {
+    background: #e8f5e9;
+    border-color: #4caf50;
+    color: #2e7d32;
+}
+
+.comparison-badge.badge-acceptable {
+    background: #fff8e1;
+    border-color: #ffc107;
+    color: #f57c00;
+}
+
+.comparison-badge.badge-degraded {
+    background: #ffebee;
+    border-color: #f44336;
+    color: #c62828;
+}
+
+.comparison-arrow {
+    font-size: 3rem;
+    color: #0d80d8;
+    font-weight: bold;
+}
+
+.comparison-metrics {
+    font-size: 0.875rem;
+    color: #495057;
+    line-height: 1.8;
+}
+
+.comparison-metrics div {
+    padding: 0.25rem 0;
+}
+
+/* Success Recommendation */
+.recommendation-card.success {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+    border-left-color: #4caf50;
+}
+
+/* Success Section */
+.success-section {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+    border: 3px solid #4caf50;
+}
+
+.success-message {
+    text-align: center;
+    padding: 2rem;
+}
+
+.success-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.success-message h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2e7d32;
+    margin: 1rem 0;
+}
+
+.success-message p {
+    font-size: 1.125rem;
+    color: #495057;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero-section {
@@ -417,6 +696,54 @@ h1:focus {
     .comparison-table th,
     .comparison-table td {
         padding: 0.75rem 0.5rem;
+    }
+
+    .performance-badge {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+        gap: 1rem;
+    }
+
+    .performance-icon {
+        font-size: 3rem;
+    }
+
+    .performance-content h3 {
+        font-size: 1.5rem;
+    }
+
+    .performance-content p {
+        font-size: 1rem;
+    }
+
+    .metric-label {
+        min-width: auto;
+        font-size: 0.75rem;
+    }
+
+    .upgrade-comparison {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+
+    .comparison-arrow {
+        transform: rotate(90deg);
+        font-size: 2rem;
+    }
+
+    .comparison-column h4 {
+        font-size: 0.875rem;
+    }
+
+    .comparison-badge {
+        font-size: 1rem;
+    }
+
+    .upgrade-section::before {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.75rem;
+        left: 1rem;
     }
 }
 

@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @rendermode InteractiveServer
 
 <PageTitle>Octopus Deploy - Hardware Scaling Calculator</PageTitle>
@@ -6,38 +6,26 @@
 <div class="hardware-scaling-calculator">
     <div class="hero-section">
         <div class="container">
-            <h1>Hardware Scaling Calculator</h1>
+            <h1>Will Octopus Perform Well For You?</h1>
             <p class="lead">
-                Understand how parallel deployments and CPU cores affect your deployment performance.
-                Use this tool to estimate deployment times and optimize your Octopus Server configuration.
+                Describe your typical deployment scenario and find out if you'll experience optimal performance
+                or if you should consider upgrading your hardware resources.
             </p>
         </div>
     </div>
 
     <div class="calculator-section">
         <div class="container">
+            <!-- Step 1: Describe Your Deployment Scenario -->
             <div class="calculator-card">
-                <h2>Configure Your Deployment Scenario</h2>
+                <h2>Step 1: Describe Your Deployment Scenario</h2>
+                <p class="section-intro">Tell us about your typical deployment workload so we can assess performance.</p>
 
                 <div class="input-section">
                     <div class="input-group">
-                        <label for="cpuCores" class="form-label">
-                            <strong>CPU Cores</strong>
-                            <span class="help-text">Number of CPU cores allocated to your Octopus Server</span>
-                        </label>
-                        <select id="cpuCores" class="form-select" @onchange="OnCpuCoresChanged">
-                            <option value="2" selected="@(selectedCpuCores == 2)">2 Cores (2000 millicores)</option>
-                            <option value="2.5" selected="@(selectedCpuCores == 2.5)">2.5 Cores (2500 millicores)</option>
-                            <option value="3" selected="@(selectedCpuCores == 3)">3 Cores (3000 millicores)</option>
-                            <option value="4" selected="@(selectedCpuCores == 4)">4 Cores (4000 millicores)</option>
-                            <option value="8" selected="@(selectedCpuCores == 8)">8 Cores (8000 millicores)</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
                         <label for="parallelTargets" class="form-label">
                             <strong>Parallel Targets per Deployment</strong>
-                            <span class="help-text">Number of deployment targets executing simultaneously</span>
+                            <span class="help-text">How many deployment targets execute simultaneously in each deployment?</span>
                         </label>
                         <input type="range"
                                id="parallelTargets"
@@ -52,8 +40,8 @@
 
                     <div class="input-group">
                         <label for="numDeployments" class="form-label">
-                            <strong>Number of Deployments</strong>
-                            <span class="help-text">Total deployments in your batch</span>
+                            <strong>Deployments in a Typical Batch</strong>
+                            <span class="help-text">How many deployments do you typically run together?</span>
                         </label>
                         <input type="range"
                                id="numDeployments"
@@ -68,8 +56,8 @@
 
                     <div class="input-group">
                         <label for="taskCap" class="form-label">
-                            <strong>Task Cap</strong>
-                            <span class="help-text">Maximum concurrent deployments (Octopus Server task cap setting)</span>
+                            <strong>Task Cap Setting</strong>
+                            <span class="help-text">Maximum concurrent deployments (your Octopus Server task cap setting)</span>
                         </label>
                         <select id="taskCap" class="form-select" @onchange="OnTaskCapChanged">
                             <option value="5" selected="@(selectedTaskCap == 5)">5 concurrent deployments</option>
@@ -80,115 +68,142 @@
                         </select>
                     </div>
                 </div>
+            </div>
 
-                <div class="results-section">
-                    <h3>Estimated Performance</h3>
+            <!-- Step 2: Performance Assessment -->
+            <div class="calculator-card">
+                <h2>Step 2: Your Expected Performance</h2>
+                <p class="section-intro">Based on your deployment scenario with our <strong>Standard Plan (2 CPU cores)</strong>:</p>
 
-                    <div class="results-grid">
-                        <div class="result-card">
-                            <div class="result-icon">⏱️</div>
-                            <div class="result-content">
-                                <div class="result-label">Single Deployment Duration</div>
-                                <div class="result-value">@estimatedSingleDuration seconds</div>
-                            </div>
-                        </div>
-
-                        <div class="result-card">
-                            <div class="result-icon">⏰</div>
-                            <div class="result-content">
-                                <div class="result-label">Total Batch Duration</div>
-                                <div class="result-value">@FormatDuration(estimatedTotalDuration)</div>
-                            </div>
-                        </div>
-
-                        <div class="result-card">
-                            <div class="result-icon">💻</div>
-                            <div class="result-content">
-                                <div class="result-label">VM CPU Utilization</div>
-                                <div class="result-value">~@estimatedVmCpu%</div>
-                                <div class="result-status">@GetCpuStatus(estimatedVmCpu)</div>
-                            </div>
-                        </div>
-
-                        <div class="result-card">
-                            <div class="result-icon">🗄️</div>
-                            <div class="result-content">
-                                <div class="result-label">Database CPU Utilization</div>
-                                <div class="result-value">~@estimatedDbCpu%</div>
-                                <div class="result-status">@GetCpuStatus(estimatedDbCpu)</div>
-                            </div>
+                <div class="performance-status-container">
+                    <div class="performance-badge @GetPerformanceBadgeClass()">
+                        <div class="performance-icon">@GetPerformanceIcon()</div>
+                        <div class="performance-content">
+                            <h3>@GetPerformanceTitle()</h3>
+                            <p>@GetPerformanceDescription()</p>
                         </div>
                     </div>
 
-                    @if (showUpgradeRecommendation)
-                    {
-                        <div class="recommendation-card">
-                            <h4>💡 Recommendation</h4>
-                            <p>@recommendationMessage</p>
+                    <div class="performance-details">
+                        <div class="performance-metric">
+                            <span class="metric-label">VM CPU Utilization</span>
+                            <div class="metric-bar-container">
+                                <div class="metric-bar" style="width: @estimatedVmCpu%"></div>
+                            </div>
+                            <span class="metric-value">@estimatedVmCpu%</span>
                         </div>
-                    }
-                </div>
-
-                <div class="comparison-section">
-                    <h3>Compare Hardware Configurations</h3>
-                    <div class="comparison-table-wrapper">
-                        <table class="comparison-table">
-                            <thead>
-                                <tr>
-                                    <th>CPU Cores</th>
-                                    <th>Est. Total Duration</th>
-                                    <th>VM CPU %</th>
-                                    <th>DB CPU %</th>
-                                    <th>Performance</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var config in GetComparisonConfigurations())
-                                {
-                                    <tr class="@(config.Cores == selectedCpuCores ? "selected-row" : "")">
-                                        <td><strong>@config.Cores Cores</strong></td>
-                                        <td>@FormatDuration(config.TotalDuration)</td>
-                                        <td>@config.VmCpu%</td>
-                                        <td>@config.DbCpu%</td>
-                                        <td>@config.Performance</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <div class="performance-metric">
+                            <span class="metric-label">Database CPU Utilization</span>
+                            <div class="metric-bar-container">
+                                <div class="metric-bar" style="width: @estimatedDbCpu%"></div>
+                            </div>
+                            <span class="metric-value">@estimatedDbCpu%</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Step 3: Upgrade Path (conditional) -->
+            @if (currentPerformanceLevel != PerformanceLevel.Optimal)
+            {
+                <div class="calculator-card upgrade-section">
+                    <h2>Step 3: Improve Your Performance</h2>
+                    <p class="section-intro">
+                        @if (currentPerformanceLevel == PerformanceLevel.Degraded)
+                        {
+                            <text>Your deployment scenario will experience degraded performance on 2 cores. Consider upgrading to improve performance.</text>
+                        }
+                        else
+                        {
+                            <text>Your deployment scenario is acceptable but could be optimized. Consider upgrading for better headroom.</text>
+                        }
+                    </p>
+
+                    <div class="upgrade-controls">
+                        <label for="upgradeCores" class="form-label">
+                            <strong>Select CPU Cores</strong>
+                            <span class="help-text">See how additional cores improve your performance</span>
+                        </label>
+                        <input type="range"
+                               id="upgradeCores"
+                               class="form-range upgrade-slider"
+                               min="2"
+                               max="8"
+                               step="0.5"
+                               @bind="upgradeCpuCores"
+                               @bind:event="oninput" />
+                        <div class="range-value-large">@upgradeCpuCores Cores</div>
+                    </div>
+
+                    <div class="upgrade-comparison">
+                        <div class="comparison-column">
+                            <h4>Current (2 Cores)</h4>
+                            <div class="comparison-badge @GetPerformanceBadgeClass()">
+                                @GetPerformanceIcon() @GetPerformanceTitle()
+                            </div>
+                            <div class="comparison-metrics">
+                                <div>VM CPU: @estimatedVmCpu%</div>
+                                <div>DB CPU: @estimatedDbCpu%</div>
+                            </div>
+                        </div>
+
+                        <div class="comparison-arrow">→</div>
+
+                        <div class="comparison-column">
+                            <h4>Upgraded (@upgradeCpuCores Cores)</h4>
+                            <div class="comparison-badge @GetUpgradePerformanceBadgeClass()">
+                                @GetUpgradePerformanceIcon() @GetUpgradePerformanceTitle()
+                            </div>
+                            <div class="comparison-metrics">
+                                <div>VM CPU: @upgradedVmCpu%</div>
+                                <div>DB CPU: @upgradedDbCpu%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (GetUpgradePerformanceLevel() == PerformanceLevel.Optimal)
+                    {
+                        <div class="recommendation-card success">
+                            <h4>✅ Recommended Configuration</h4>
+                            <p>Upgrading to @upgradeCpuCores cores will give you optimal performance with plenty of headroom for growth.</p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="calculator-card success-section">
+                    <div class="success-message">
+                        <div class="success-icon">🎉</div>
+                        <h3>Perfect! You're All Set</h3>
+                        <p>Your deployment scenario will run great on our Standard Plan (2 cores). You have plenty of headroom for occasional spikes.</p>
+                    </div>
+                </div>
+            }
+
+            <!-- Educational Content -->
             <div class="info-section">
-                <h3>Understanding the Results</h3>
+                <h3>Understanding Performance Levels</h3>
                 <div class="info-grid">
                     <div class="info-card">
-                        <h4>🚀 Parallel Deployments</h4>
+                        <h4>🟢 Optimal Performance</h4>
                         <p>
-                            Octopus Deploy can execute multiple deployments simultaneously. The Task Cap setting limits
-                            how many deployments can run at once. Increasing this allows more parallel work but requires
-                            more CPU resources.
+                            <strong>CPU &lt; 40%:</strong> Excellent! Your server has plenty of capacity.
+                            Deployments will run smoothly with room for growth and occasional spikes in activity.
                         </p>
                     </div>
                     <div class="info-card">
-                        <h4>🎯 Parallel Targets</h4>
+                        <h4>🟡 Acceptable Performance</h4>
                         <p>
-                            Within each deployment, Octopus can deploy to multiple targets in parallel. More parallel targets
-                            means faster individual deployments but higher CPU usage during execution.
+                            <strong>CPU 40-70%:</strong> Your deployments will generally work well, but you might
+                            experience some slowdowns during peak usage. Consider upgrading if you plan to increase deployment frequency.
                         </p>
                     </div>
                     <div class="info-card">
-                        <h4>💪 CPU Scaling</h4>
+                        <h4>🔴 Degraded Performance</h4>
                         <p>
-                            Adding CPU cores allows Octopus to handle more parallel work efficiently. If your CPU utilization
-                            is consistently high (>70%), consider upgrading to handle your deployment workload.
-                        </p>
-                    </div>
-                    <div class="info-card">
-                        <h4>📊 Optimization Tips</h4>
-                        <p>
-                            Balance your Task Cap and parallel targets based on your hardware. More isn't always better—
-                            oversubscribing can lead to queueing and slower overall performance.
+                            <strong>CPU &gt; 70%:</strong> Your server will struggle with this workload.
+                            Expect queueing delays and slower deployments. We strongly recommend upgrading your CPU cores.
                         </p>
                     </div>
                 </div>
@@ -198,30 +213,32 @@
 </div>
 
 @code {
-    private double selectedCpuCores = 2;
+    // User inputs
     private int selectedParallelTargets = 10;
     private int selectedNumDeployments = 100;
     private int selectedTaskCap = 20;
 
-    private int estimatedSingleDuration = 110;
-    private int estimatedTotalDuration = 607;
+    // Performance calculation for 2 cores (baseline)
     private int estimatedVmCpu = 35;
     private int estimatedDbCpu = 10;
-    private bool showUpgradeRecommendation = false;
-    private string recommendationMessage = "";
+
+    // Upgrade path
+    private double upgradeCpuCores = 4.0;
+    private int upgradedVmCpu = 0;
+    private int upgradedDbCpu = 0;
+
+    private enum PerformanceLevel
+    {
+        Optimal,
+        Acceptable,
+        Degraded
+    }
+
+    private PerformanceLevel currentPerformanceLevel = PerformanceLevel.Optimal;
 
     protected override void OnInitialized()
     {
-        CalculateEstimates();
-    }
-
-    private void OnCpuCoresChanged(ChangeEventArgs e)
-    {
-        if (double.TryParse(e.Value?.ToString(), out var cores))
-        {
-            selectedCpuCores = cores;
-            CalculateEstimates();
-        }
+        CalculatePerformance();
     }
 
     private void OnTaskCapChanged(ChangeEventArgs e)
@@ -229,11 +246,25 @@
         if (int.TryParse(e.Value?.ToString(), out var taskCap))
         {
             selectedTaskCap = taskCap;
-            CalculateEstimates();
+            CalculatePerformance();
         }
     }
 
-    private void CalculateEstimates()
+    private void CalculatePerformance()
+    {
+        // Calculate for 2 cores (baseline/standard plan)
+        var baseline = CalculateForCores(2.0);
+        estimatedVmCpu = baseline.VmCpu;
+        estimatedDbCpu = baseline.DbCpu;
+        currentPerformanceLevel = GetPerformanceLevelFromCpu(estimatedVmCpu, estimatedDbCpu);
+
+        // Calculate for upgraded cores
+        var upgraded = CalculateForCores(upgradeCpuCores);
+        upgradedVmCpu = upgraded.VmCpu;
+        upgradedDbCpu = upgraded.DbCpu;
+    }
+
+    private (int VmCpu, int DbCpu) CalculateForCores(double cores)
     {
         // Base performance data from test results (2 cores, 10 targets, TC20)
         var baselineData = new
@@ -241,139 +272,116 @@
             Cores = 2.0,
             Targets = 10,
             TaskCap = 20,
-            SingleDuration = 110,
-            TotalDuration = 607,
             VmCpu = 35,
             DbCpu = 10
         };
 
         // Calculate scaling factors
-        var coreScaleFactor = baselineData.Cores / selectedCpuCores;
+        var coreScaleFactor = baselineData.Cores / cores;
         var targetScaleFactor = selectedParallelTargets / (double)baselineData.Targets;
         var taskCapScaleFactor = selectedTaskCap / (double)baselineData.TaskCap;
 
-        // Estimate single deployment duration (more targets = longer single deployment)
-        estimatedSingleDuration = (int)(baselineData.SingleDuration * Math.Sqrt(targetScaleFactor));
-
-        // Estimate total duration considering parallelism
-        var serialBatches = Math.Ceiling(selectedNumDeployments / (double)selectedTaskCap);
-        var baseBatchTime = estimatedSingleDuration * serialBatches;
-
-        // CPU scaling reduces time (more cores = faster processing)
-        estimatedTotalDuration = (int)(baseBatchTime * Math.Pow(coreScaleFactor, 0.7));
-
         // Estimate CPU usage (more parallel work = higher CPU, more cores = lower per-core usage)
-        var workloadFactor = targetScaleFactor * (selectedTaskCap / 20.0);
-        estimatedVmCpu = (int)(baselineData.VmCpu * workloadFactor * coreScaleFactor);
-        estimatedDbCpu = (int)(baselineData.DbCpu * workloadFactor * Math.Pow(coreScaleFactor, 0.5));
+        var workloadFactor = targetScaleFactor * taskCapScaleFactor;
+        var vmCpu = (int)(baselineData.VmCpu * workloadFactor * coreScaleFactor);
+        var dbCpu = (int)(baselineData.DbCpu * workloadFactor * Math.Pow(coreScaleFactor, 0.5));
 
         // Cap CPU estimates at 100%
-        estimatedVmCpu = Math.Min(estimatedVmCpu, 100);
-        estimatedDbCpu = Math.Min(estimatedDbCpu, 100);
+        vmCpu = Math.Min(vmCpu, 100);
+        dbCpu = Math.Min(dbCpu, 100);
 
-        // Generate recommendations
-        showUpgradeRecommendation = false;
-        recommendationMessage = "";
-
-        if (estimatedVmCpu > 70 || estimatedDbCpu > 70)
-        {
-            showUpgradeRecommendation = true;
-            var nextTierCores = selectedCpuCores * 2;
-            if (nextTierCores <= 8)
-            {
-                recommendationMessage = $"Your CPU utilization is high. Consider upgrading to {nextTierCores} cores for better performance and headroom.";
-            }
-            else
-            {
-                recommendationMessage = "Your CPU utilization is high. Consider reducing parallel targets or task cap, or optimizing your deployment processes.";
-            }
-        }
-        else if (estimatedVmCpu < 30 && estimatedDbCpu < 30)
-        {
-            showUpgradeRecommendation = true;
-            recommendationMessage = "Your CPU utilization is low. You could increase the task cap or parallel targets to process deployments faster without overloading your server.";
-        }
+        return (vmCpu, dbCpu);
     }
 
-    private string FormatDuration(int seconds)
-    {
-        if (seconds < 60)
-            return $"{seconds} seconds";
-
-        var minutes = seconds / 60;
-        var remainingSeconds = seconds % 60;
-
-        if (minutes < 60)
-            return $"{minutes}m {remainingSeconds}s";
-
-        var hours = minutes / 60;
-        var remainingMinutes = minutes % 60;
-        return $"{hours}h {remainingMinutes}m";
-    }
-
-    private string GetCpuStatus(int cpuPercent)
-    {
-        if (cpuPercent < 40)
-            return "✅ Good headroom";
-        if (cpuPercent < 70)
-            return "⚠️ Moderate";
-        return "🔴 High load";
-    }
-
-    private class ComparisonConfig
-    {
-        public double Cores { get; set; }
-        public int TotalDuration { get; set; }
-        public int VmCpu { get; set; }
-        public int DbCpu { get; set; }
-        public string Performance { get; set; } = "";
-    }
-
-    private List<ComparisonConfig> GetComparisonConfigurations()
-    {
-        var configs = new List<ComparisonConfig>();
-        var testCores = new[] { 2.0, 2.5, 3.0, 4.0, 8.0 };
-
-        foreach (var cores in testCores)
-        {
-            var savedCores = selectedCpuCores;
-            selectedCpuCores = cores;
-
-            var tempSingle = estimatedSingleDuration;
-            var tempTotal = estimatedTotalDuration;
-            var tempVm = estimatedVmCpu;
-            var tempDb = estimatedDbCpu;
-
-            CalculateEstimates();
-
-            var config = new ComparisonConfig
-            {
-                Cores = cores,
-                TotalDuration = estimatedTotalDuration,
-                VmCpu = estimatedVmCpu,
-                DbCpu = estimatedDbCpu,
-                Performance = GetPerformanceIndicator(estimatedVmCpu, estimatedDbCpu)
-            };
-
-            configs.Add(config);
-
-            selectedCpuCores = savedCores;
-            estimatedSingleDuration = tempSingle;
-            estimatedTotalDuration = tempTotal;
-            estimatedVmCpu = tempVm;
-            estimatedDbCpu = tempDb;
-        }
-
-        return configs;
-    }
-
-    private string GetPerformanceIndicator(int vmCpu, int dbCpu)
+    private PerformanceLevel GetPerformanceLevelFromCpu(int vmCpu, int dbCpu)
     {
         var maxCpu = Math.Max(vmCpu, dbCpu);
-        if (maxCpu < 40)
-            return "🟢 Excellent";
-        if (maxCpu < 70)
-            return "🟡 Good";
-        return "🔴 Stressed";
+        if (maxCpu < 40) return PerformanceLevel.Optimal;
+        if (maxCpu < 70) return PerformanceLevel.Acceptable;
+        return PerformanceLevel.Degraded;
+    }
+
+    private PerformanceLevel GetUpgradePerformanceLevel()
+    {
+        return GetPerformanceLevelFromCpu(upgradedVmCpu, upgradedDbCpu);
+    }
+
+    // Performance badge helpers
+    private string GetPerformanceBadgeClass()
+    {
+        return currentPerformanceLevel switch
+        {
+            PerformanceLevel.Optimal => "badge-optimal",
+            PerformanceLevel.Acceptable => "badge-acceptable",
+            PerformanceLevel.Degraded => "badge-degraded",
+            _ => ""
+        };
+    }
+
+    private string GetPerformanceIcon()
+    {
+        return currentPerformanceLevel switch
+        {
+            PerformanceLevel.Optimal => "🟢",
+            PerformanceLevel.Acceptable => "🟡",
+            PerformanceLevel.Degraded => "🔴",
+            _ => ""
+        };
+    }
+
+    private string GetPerformanceTitle()
+    {
+        return currentPerformanceLevel switch
+        {
+            PerformanceLevel.Optimal => "Optimal Performance",
+            PerformanceLevel.Acceptable => "Acceptable Performance",
+            PerformanceLevel.Degraded => "Degraded Performance",
+            _ => ""
+        };
+    }
+
+    private string GetPerformanceDescription()
+    {
+        return currentPerformanceLevel switch
+        {
+            PerformanceLevel.Optimal => "Your deployments will run smoothly with plenty of capacity for growth.",
+            PerformanceLevel.Acceptable => "Your deployments will generally work well, but you might experience some slowdowns during peak usage.",
+            PerformanceLevel.Degraded => "Your server will struggle with this workload. Expect queueing delays and slower deployments.",
+            _ => ""
+        };
+    }
+
+    // Upgrade badge helpers
+    private string GetUpgradePerformanceBadgeClass()
+    {
+        return GetUpgradePerformanceLevel() switch
+        {
+            PerformanceLevel.Optimal => "badge-optimal",
+            PerformanceLevel.Acceptable => "badge-acceptable",
+            PerformanceLevel.Degraded => "badge-degraded",
+            _ => ""
+        };
+    }
+
+    private string GetUpgradePerformanceIcon()
+    {
+        return GetUpgradePerformanceLevel() switch
+        {
+            PerformanceLevel.Optimal => "🟢",
+            PerformanceLevel.Acceptable => "🟡",
+            PerformanceLevel.Degraded => "🔴",
+            _ => ""
+        };
+    }
+
+    private string GetUpgradePerformanceTitle()
+    {
+        return GetUpgradePerformanceLevel() switch
+        {
+            PerformanceLevel.Optimal => "Optimal",
+            PerformanceLevel.Acceptable => "Acceptable",
+            PerformanceLevel.Degraded => "Degraded",
+            _ => ""
+        };
     }
 }
