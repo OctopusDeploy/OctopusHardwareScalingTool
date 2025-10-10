@@ -7,6 +7,13 @@ html, body {
     line-height: 1.6;
 }
 
+/* Full-width layout without navigation */
+.page-fullwidth {
+    width: 100%;
+    min-height: 100vh;
+    background: #ffffff;
+}
+
 a, .btn-link {
     color: #0d80d8;
 }
@@ -776,8 +783,16 @@ h1:focus {
 }
 
 .hardware-icon {
-    font-size: 2.5rem;
     flex-shrink: 0;
+    color: #0d80d8;
+    display: flex;
+    align-items: center;
+}
+
+.hardware-icon svg {
+    width: 40px;
+    height: 40px;
+    stroke: #0d80d8;
 }
 
 .hardware-details {
@@ -971,8 +986,222 @@ h1:focus {
     margin: 0.5rem 0;
 }
 
+/* Octopus Header */
+.octopus-header {
+    background: linear-gradient(135deg, #0a151e 0%, #1a2a3e 100%);
+    color: white;
+    padding: 3rem 0;
+    text-align: center;
+    border-bottom: 4px solid #0d80d8;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.header-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: white;
+}
+
+.header-content p {
+    font-size: 1.25rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Pricing Tabs */
+.pricing-tabs-container {
+    background: #f8f9fa;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.pricing-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.pricing-tab {
+    flex: 1;
+    padding: 1rem 2rem;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.pricing-tab:hover {
+    border-color: #0d80d8;
+    box-shadow: 0 4px 12px rgba(13, 128, 216, 0.1);
+}
+
+.pricing-tab.active {
+    background: linear-gradient(135deg, #0d80d8 0%, #0a66b3 100%);
+    color: white;
+    border-color: #0d80d8;
+}
+
+.tab-icon {
+    font-size: 1.5rem;
+}
+
+/* Cloud Calculator */
+.cloud-calculator {
+    margin-top: 2rem;
+}
+
+.budget-value {
+    font-size: 2rem;
+    color: #0d80d8;
+    font-weight: 700;
+}
+
+.cloud-capabilities {
+    margin-top: 3rem;
+}
+
+.cloud-capabilities h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0a151e;
+    margin-bottom: 2rem;
+}
+
+.capability-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.capability-card {
+    display: flex;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px solid #e8ecef;
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.capability-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-color: #0d80d8;
+}
+
+.capability-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    color: #0d80d8;
+}
+
+.capability-icon svg {
+    width: 40px;
+    height: 40px;
+    stroke: #0d80d8;
+}
+
+.capability-details {
+    flex: 1;
+}
+
+.capability-details strong {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0a151e;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.capability-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0d80d8;
+    margin-bottom: 0.5rem;
+}
+
+.capability-note {
+    display: block;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+}
+
+.feature-list li {
+    padding: 0.25rem 0;
+    color: #495057;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.feature-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.cloud-recommendation {
+    margin-top: 3rem;
+}
+
+.budget-tip {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.95rem;
+    color: #495057;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
+    .octopus-header {
+        padding: 2rem 0;
+    }
+
+    .header-content h1 {
+        font-size: 1.75rem;
+    }
+
+    .header-content p {
+        font-size: 1rem;
+    }
+
+    .pricing-tabs {
+        flex-direction: column;
+    }
+
+    .pricing-tab {
+        width: 100%;
+    }
+
     .hero-section {
         padding: 2.5rem 0 2rem;
     }

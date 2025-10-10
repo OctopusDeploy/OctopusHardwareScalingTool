@@ -51,16 +51,16 @@ Based on archetype document, Location-Centric customers (Bunnings, Next, DRB, Ph
 - [x] Made upgrade slider smart (starts from current cores + 1)
 - [x] Dynamic text updates based on selected CPU cores
 
-## small tweaks to the existing content 
-- [ ] Remove the left hand and top navigation bar
-- [ ] Remove the section on Understanding Performance Levels as it has the same information as Expected Resource 
+## Small Tweaks to the Existing Content ✅
+- [x] Remove the left hand and top navigation bar
+- [x] Remove the section on Understanding Performance Levels as it has the same information as Expected Resource
   Utilization
-- [ ] change the icons for Recommended Hardware Specifications use:
+- [x] Change the icons for Recommended Hardware Specifications use:
     - A cpu chip for cpu cores
     - A ram din chip for memory
     - A database icon for the database server
 
-## add cloud pricing
-- [ ] Add the same header as https://octopus.com/pricing/overview
-- [ ] Add tabs for Octopus Server and Octopus Cloud like on the https://octopus.com/pricing/overview page the current experience is for the server tab
-- [ ] Have a very similar experience however instead of allowing the customer to select the number of cores they want to assume a core costs $100 per month and the cloud platform will provide all the cores up to a specific budget they can set per month
+## Add Cloud Pricing ✅
+- [x] Add the same header as https://octopus.com/pricing/overview
+- [x] Add tabs for Octopus Server and Octopus Cloud like on the https://octopus.com/pricing/overview page the current experience is for the server tab
+- [x] Have a very similar experience however instead of allowing the customer to select the number of cores they want to assume a core costs $100 per month and the cloud platform will provide all the cores up to a specific budget they can set per month

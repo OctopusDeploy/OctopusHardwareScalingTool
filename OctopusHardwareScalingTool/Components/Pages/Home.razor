@@ -4,18 +4,37 @@
 <PageTitle>Octopus Deploy - Hardware Sizing Calculator</PageTitle>
 
 <div class="hardware-scaling-calculator">
-    <div class="hero-section">
+    <!-- Octopus-style Header -->
+    <header class="octopus-header">
+        <div class="header-container">
+            <div class="header-content">
+                <h1>Octopus Deploy Hardware Sizing Calculator</h1>
+                <p>Size your infrastructure correctly for your deployment needs</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <div class="pricing-tabs-container">
         <div class="container">
-            <h1>Octopus Deploy Hardware Sizing Calculator</h1>
-            <p class="lead">
-                Size your infrastructure correctly for your deployment needs.
-                Tell us about your deployment scenario and we'll help you determine the right hardware specifications.
-            </p>
+            <div class="pricing-tabs">
+                <button class="pricing-tab @(activeTab == "server" ? "active" : "")" @onclick="@(() => SwitchTab("server"))">
+                    <span class="tab-icon">🖥️</span>
+                    Octopus Server
+                </button>
+                <button class="pricing-tab @(activeTab == "cloud" ? "active" : "")" @onclick="@(() => SwitchTab("cloud"))">
+                    <span class="tab-icon">☁️</span>
+                    Octopus Cloud
+                </button>
+            </div>
         </div>
     </div>
 
     <div class="calculator-section">
         <div class="container">
+            @if (activeTab == "server")
+            {
+                <!-- Server Tab Content -->
             <!-- Preset Selector -->
             <div class="preset-selector">
                 <h3>Quick Start: Choose a Preset Configuration</h3>
@@ -139,21 +158,53 @@
                         <h3>Recommended Hardware Specifications</h3>
                         <div class="hardware-recommendation">
                             <div class="hardware-item">
-                                <span class="hardware-icon">💻</span>
+                                <span class="hardware-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                                        <rect x="9" y="9" width="6" height="6"></rect>
+                                        <line x1="9" y1="1" x2="9" y2="4"></line>
+                                        <line x1="15" y1="1" x2="15" y2="4"></line>
+                                        <line x1="9" y1="20" x2="9" y2="23"></line>
+                                        <line x1="15" y1="20" x2="15" y2="23"></line>
+                                        <line x1="20" y1="9" x2="23" y2="9"></line>
+                                        <line x1="20" y1="14" x2="23" y2="14"></line>
+                                        <line x1="1" y1="9" x2="4" y2="9"></line>
+                                        <line x1="1" y1="14" x2="4" y2="14"></line>
+                                    </svg>
+                                </span>
                                 <div class="hardware-details">
                                     <strong>Minimum CPU Cores Required:</strong>
                                     <span class="hardware-value">@recommendedCores cores</span>
                                 </div>
                             </div>
                             <div class="hardware-item">
-                                <span class="hardware-icon">💾</span>
+                                <span class="hardware-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="7" width="20" height="10" rx="2" ry="2"></rect>
+                                        <path d="M6 11v2"></path>
+                                        <path d="M10 11v2"></path>
+                                        <path d="M14 11v2"></path>
+                                        <path d="M18 11v2"></path>
+                                        <path d="M7 7V5a1 1 0 0 1 1-1h2"></path>
+                                        <path d="M14 5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"></path>
+                                        <path d="M7 17v2a1 1 0 0 0 1 1h2"></path>
+                                        <path d="M14 20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2"></path>
+                                    </svg>
+                                </span>
                                 <div class="hardware-details">
                                     <strong>Recommended RAM:</strong>
                                     <span class="hardware-value">@recommendedRam GB</span>
                                 </div>
                             </div>
                             <div class="hardware-item">
-                                <span class="hardware-icon">💿</span>
+                                <span class="hardware-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                                        <path d="M21 12v7"></path>
+                                    </svg>
+                                </span>
                                 <div class="hardware-details">
                                     <strong>Database Server Cores:</strong>
                                     <span class="hardware-value">@recommendedDbCores cores</span>
@@ -300,39 +351,137 @@
                     }
                 </div>
             </div>
+            }
+            else if (activeTab == "cloud")
+            {
+                <!-- Cloud Tab Content -->
+                <div class="calculator-card">
+                    <h2>Octopus Cloud - Budget-Based Sizing</h2>
+                    <p class="section-intro">
+                        With Octopus Cloud, we automatically scale to meet your needs.
+                        Set your monthly budget and we'll show you what performance to expect.
+                    </p>
 
-            <!-- Educational Content -->
-            <div class="info-section">
-                <h3>Understanding Performance Levels</h3>
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h4>🟢 Optimal Performance</h4>
-                        <p>
-                            <strong>CPU &lt; 40%:</strong> Excellent! Your server has plenty of capacity.
-                            Deployments will run smoothly with room for growth and occasional spikes in activity.
-                        </p>
-                    </div>
-                    <div class="info-card">
-                        <h4>🟡 Acceptable Performance</h4>
-                        <p>
-                            <strong>CPU 40-70%:</strong> Your deployments will generally work well, but you might
-                            experience some slowdowns during peak usage. Consider upgrading if you plan to increase deployment frequency.
-                        </p>
-                    </div>
-                    <div class="info-card">
-                        <h4>🔴 Degraded Performance</h4>
-                        <p>
-                            <strong>CPU &gt; 70%:</strong> Your server will struggle with this workload.
-                            Expect queueing delays and slower deployments. We strongly recommend upgrading your CPU cores.
-                        </p>
+                    <div class="cloud-calculator">
+                        <div class="input-group">
+                            <label for="monthlyBudget" class="form-label">
+                                <strong>Monthly Budget</strong>
+                                <span class="help-text">Your cloud infrastructure budget per month (USD)</span>
+                            </label>
+                            <input type="range"
+                                   id="monthlyBudget"
+                                   class="form-range"
+                                   min="100"
+                                   max="10000"
+                                   step="100"
+                                   @bind="monthlyBudget"
+                                   @bind:event="oninput" />
+                            <div class="range-value budget-value">$@monthlyBudget.ToString("N0") / month</div>
+                        </div>
+
+                        <div class="cloud-capabilities">
+                            <h3>What You Get</h3>
+                            <div class="capability-grid">
+                                <div class="capability-card">
+                                    <div class="capability-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                                            <rect x="9" y="9" width="6" height="6"></rect>
+                                            <line x1="9" y1="1" x2="9" y2="4"></line>
+                                            <line x1="15" y1="1" x2="15" y2="4"></line>
+                                            <line x1="9" y1="20" x2="9" y2="23"></line>
+                                            <line x1="15" y1="20" x2="15" y2="23"></line>
+                                            <line x1="20" y1="9" x2="23" y2="9"></line>
+                                            <line x1="20" y1="14" x2="23" y2="14"></line>
+                                            <line x1="1" y1="9" x2="4" y2="9"></line>
+                                            <line x1="1" y1="14" x2="4" y2="14"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="capability-details">
+                                        <strong>Available CPU Cores</strong>
+                                        <span class="capability-value">@cloudCores cores</span>
+                                        <span class="capability-note">Auto-scaling based on demand</span>
+                                    </div>
+                                </div>
+
+                                <div class="capability-card">
+                                    <div class="capability-icon">🏪</div>
+                                    <div class="capability-details">
+                                        <strong>Supported Locations</strong>
+                                        <span class="capability-value">Up to @maxCloudLocations locations</span>
+                                        <span class="capability-note">With @selectedDevicesPerLocation devices each</span>
+                                    </div>
+                                </div>
+
+                                <div class="capability-card">
+                                    <div class="capability-icon">⚡</div>
+                                    <div class="capability-details">
+                                        <strong>Deployment Time</strong>
+                                        <span class="capability-value">@cloudDeploymentTime.ToString("F1") hours</span>
+                                        <span class="capability-note">For all locations</span>
+                                    </div>
+                                </div>
+
+                                <div class="capability-card">
+                                    <div class="capability-icon">✨</div>
+                                    <div class="capability-details">
+                                        <strong>Included Features</strong>
+                                        <ul class="feature-list">
+                                            <li>Automatic scaling</li>
+                                            <li>High availability</li>
+                                            <li>Automated backups</li>
+                                            <li>24/7 monitoring</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cloud-recommendation">
+                            @if (cloudDeploymentTime <= selectedDeploymentWindow)
+                            {
+                                <div class="recommendation-card success">
+                                    <h4>✅ Your Budget Meets Your Needs</h4>
+                                    <p>
+                                        With a budget of <strong>$@monthlyBudget.ToString("N0")</strong> per month,
+                                        you can deploy to all @selectedLocations locations within your @selectedDeploymentWindow hour window.
+                                    </p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="recommendation-card warning">
+                                    <h4>⚠️ Consider Increasing Your Budget</h4>
+                                    <p>
+                                        To deploy to all @selectedLocations locations within @selectedDeploymentWindow hours,
+                                        we recommend a budget of <strong>$@recommendedBudget.ToString("N0")</strong> per month
+                                        (@recommendedCloudCores cores).
+                                    </p>
+                                    <p class="budget-tip">
+                                        Current budget provides @cloudCores cores. You need @(recommendedCloudCores - cloudCores) more cores.
+                                    </p>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>
 
 @code {
+    // Tab management
+    private string activeTab = "server";
+
+    // Cloud pricing variables
+    private decimal monthlyBudget = 1000;
+    private int cloudCores => (int)(monthlyBudget / 100); // $100 per core
+    private int maxCloudLocations => cloudCores * 10; // Estimate based on cores
+    private double cloudDeploymentTime => CalculateCloudDeploymentTime();
+    private decimal recommendedBudget => recommendedCloudCores * 100;
+    private int recommendedCloudCores => recommendedCores; // Use same calculation as server
+
     // Location-centric inputs with property setters
     private string selectedPreset = "custom";
 
@@ -614,5 +763,34 @@
             PerformanceLevel.Degraded => "Your server will struggle with this workload. Expect queueing delays and slower deployments.",
             _ => ""
         };
+    }
+
+    // Tab switching
+    private void SwitchTab(string tab)
+    {
+        activeTab = tab;
+        StateHasChanged();
+    }
+
+    // Cloud deployment time calculation
+    private double CalculateCloudDeploymentTime()
+    {
+        if (cloudCores == 0) return 999; // Very high time if no budget
+
+        // Similar calculation to server, but using cloud cores
+        int totalTargets = _selectedLocations * _selectedDevicesPerLocation;
+        int totalDeployments = _selectedLocations * _selectedApplications;
+
+        double baseTimePerDeployment = 2.0 / 60.0; // 2 minutes in hours
+        double parallelism = Math.Min(cloudCores * 2, totalDeployments);
+        double deploymentTime = (totalDeployments * baseTimePerDeployment * 20) / parallelism;
+
+        // Cloud has better network, so less overhead
+        if (totalTargets > 100)
+        {
+            deploymentTime *= 1.1; // Only 10% overhead vs 20% for on-prem
+        }
+
+        return deploymentTime;
     }
 }
