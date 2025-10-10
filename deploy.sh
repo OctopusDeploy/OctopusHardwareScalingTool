@@ -1,0 +1,187 @@
+#!/bin/bash
+set -e
+
+# Octopus Hardware Sizing Calculator - Deployment Script
+# This script deploys the application to Azure and creates a GitHub repository
+
+# Configuration
+AZURE_SUBSCRIPTION="a64630ce-fe4a-4d9d-92f2-3f770daa7d54"
+AZURE_TENANT="3d13e379-e666-469e-ac38-ec6fd61c1166"
+ACCESS_GROUP_ID="bead26f3-a84d-459f-9443-f1609a37a62f"
+RESOURCE_GROUP="rg-octopus-hardware-calculator"
+LOCATION="australiaeast"
+APP_SERVICE_PLAN="plan-octopus-hardware-calculator"
+WEB_APP_NAME="octopus-hardware-calculator"
+GITHUB_ORG="OctopusDeploy"
+GITHUB_REPO="OctopusHardwareScalingTool"
+
+echo "=========================================="
+echo "Octopus Hardware Calculator Deployment"
+echo "=========================================="
+echo ""
+
+# Check prerequisites
+echo "Checking prerequisites..."
+
+if ! command -v az &> /dev/null; then
+    echo "ERROR: Azure CLI is not installed. Please install it from https://docs.microsoft.com/en-us/cli/azure/install-azure-cli"
+    exit 1
+fi
+
+if ! command -v gh &> /dev/null; then
+    echo "ERROR: GitHub CLI is not installed. Please install it from https://cli.github.com/"
+    exit 1
+fi
+
+if ! command -v dotnet &> /dev/null; then
+    echo "ERROR: .NET SDK is not installed. Please install .NET 9.0 or later"
+    exit 1
+fi
+
+echo "✓ All prerequisites installed"
+echo ""
+
+# Login to Azure
+echo "Logging in to Azure..."
+az login --tenant "$AZURE_TENANT"
+az account set --subscription "$AZURE_SUBSCRIPTION"
+echo "✓ Logged in to Azure"
+echo ""
+
+# Check if user wants to create GitHub repo
+echo "Do you want to create a GitHub repository in the OctopusDeploy organization? (y/n)"
+read -r CREATE_REPO
+
+if [ "$CREATE_REPO" = "y" ]; then
+    echo "Creating GitHub repository..."
+
+    # Check if repo already exists
+    if gh repo view "$GITHUB_ORG/$GITHUB_REPO" &> /dev/null; then
+        echo "Repository $GITHUB_ORG/$GITHUB_REPO already exists"
+    else
+        # Create the repository
+        gh repo create "$GITHUB_ORG/$GITHUB_REPO" \
+            --public \
+            --description "Interactive hardware sizing calculator for Octopus Deploy infrastructure" \
+            --source=. \
+            --remote=origin
+
+        echo "✓ GitHub repository created: https://github.com/$GITHUB_ORG/$GITHUB_REPO"
+    fi
+
+    # Push code to GitHub
+    echo "Pushing code to GitHub..."
+    git remote add origin "https://github.com/$GITHUB_ORG/$GITHUB_REPO.git" 2>/dev/null || true
+    git push -u origin main
+    echo "✓ Code pushed to GitHub"
+    echo ""
+fi
+
+# Create Azure resources
+echo "Creating Azure Resource Group..."
+az group create \
+    --name "$RESOURCE_GROUP" \
+    --location "$LOCATION" \
+    --tags "project=OctopusHardwareCalculator" "team=ServerAtScale"
+echo "✓ Resource Group created"
+echo ""
+
+echo "Creating App Service Plan..."
+az appservice plan create \
+    --name "$APP_SERVICE_PLAN" \
+    --resource-group "$RESOURCE_GROUP" \
+    --location "$LOCATION" \
+    --sku B1 \
+    --is-linux
+echo "✓ App Service Plan created"
+echo ""
+
+echo "Creating Web App..."
+az webapp create \
+    --name "$WEB_APP_NAME" \
+    --resource-group "$RESOURCE_GROUP" \
+    --plan "$APP_SERVICE_PLAN" \
+    --runtime "DOTNETCORE:9.0"
+echo "✓ Web App created"
+echo ""
+
+# Configure Web App settings
+echo "Configuring Web App settings..."
+az webapp config appsettings set \
+    --name "$WEB_APP_NAME" \
+    --resource-group "$RESOURCE_GROUP" \
+    --settings \
+        ASPNETCORE_ENVIRONMENT="Production" \
+        WEBSITE_RUN_FROM_PACKAGE="1"
+echo "✓ App settings configured"
+echo ""
+
+# Get Web App details for AAD configuration
+WEB_APP_ID=$(az webapp show --name "$WEB_APP_NAME" --resource-group "$RESOURCE_GROUP" --query id -o tsv)
+WEB_APP_URL="https://$WEB_APP_NAME.azurewebsites.net"
+
+echo "Configuring Azure AD authentication..."
+az webapp auth microsoft update \
+    --name "$WEB_APP_NAME" \
+    --resource-group "$RESOURCE_GROUP" \
+    --tenant-id "$AZURE_TENANT" \
+    --client-id "$(az ad app create --display-name "$WEB_APP_NAME-auth" --sign-in-audience AzureADMyOrg --query appId -o tsv)" \
+    --allowed-audiences "$WEB_APP_URL" \
+    --token-store true
+echo "✓ Azure AD authentication configured"
+echo ""
+
+# Configure access restrictions (group-based)
+echo "Configuring access restrictions..."
+echo "NOTE: Group-based access control needs to be configured in Azure Portal"
+echo "      Navigate to: Authentication > Require assignment > Add users/groups"
+echo "      Add group ID: $ACCESS_GROUP_ID"
+echo ""
+
+# Build and publish the application
+echo "Building application..."
+cd "$(dirname "$0")"
+dotnet publish OctopusHardwareScalingTool/OctopusHardwareScalingTool.csproj \
+    -c Release \
+    -o ./publish
+echo "✓ Application built"
+echo ""
+
+# Create deployment package
+echo "Creating deployment package..."
+cd publish
+zip -r ../app.zip .
+cd ..
+echo "✓ Deployment package created"
+echo ""
+
+# Deploy to Azure
+echo "Deploying to Azure..."
+az webapp deployment source config-zip \
+    --name "$WEB_APP_NAME" \
+    --resource-group "$RESOURCE_GROUP" \
+    --src app.zip
+echo "✓ Application deployed"
+echo ""
+
+# Clean up
+rm -f app.zip
+rm -rf publish
+
+# Display results
+echo "=========================================="
+echo "Deployment Complete!"
+echo "=========================================="
+echo ""
+echo "Application URL: $WEB_APP_URL"
+echo "Resource Group: $RESOURCE_GROUP"
+echo "App Service: $WEB_APP_NAME"
+echo ""
+echo "Next Steps:"
+echo "1. Complete Azure AD group assignment in Azure Portal"
+echo "2. Test the application at $WEB_APP_URL"
+echo "3. Configure custom domain if needed"
+echo ""
+echo "To view logs:"
+echo "  az webapp log tail --name $WEB_APP_NAME --resource-group $RESOURCE_GROUP"
+echo ""
