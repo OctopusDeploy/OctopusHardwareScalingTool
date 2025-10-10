@@ -81,5 +81,6 @@ Based on archetype document, Location-Centric customers (Bunnings, Next, DRB, Ph
 - [x] Fix deployment issues (WebSockets, startup command, runtime format, auth v2)
 - [x] Switch GitHub push to use SSH instead of HTTPS
 
-## fix authentication
+## fixes
 - [ ] The site still seems to be publicly available even though I have enabled authentication
+- [ ] The repo creation is still trying to use https instead of ssh
