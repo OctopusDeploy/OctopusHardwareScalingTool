@@ -128,12 +128,18 @@ echo ""
 WEB_APP_ID=$(az webapp show --name "$WEB_APP_NAME" --resource-group "$RESOURCE_GROUP" --query id -o tsv)
 WEB_APP_URL="https://$WEB_APP_NAME.azurewebsites.net"
 
-# Upgrade authentication to V2 (required for az webapp auth microsoft update)
-echo "Upgrading authentication to V2..."
-az webapp auth config-version upgrade \
-    --name "$WEB_APP_NAME" \
-    --resource-group "$RESOURCE_GROUP"
-echo "✓ Authentication upgraded to V2"
+# Upgrade authentication to V2 if needed (required for az webapp auth microsoft update)
+echo "Checking authentication version..."
+AUTH_VERSION=$(az webapp auth show --name "$WEB_APP_NAME" --resource-group "$RESOURCE_GROUP" --query "configVersion" -o tsv 2>/dev/null || echo "v1")
+if [ "$AUTH_VERSION" != "v2" ]; then
+    echo "Upgrading authentication to V2..."
+    az webapp auth config-version upgrade \
+        --name "$WEB_APP_NAME" \
+        --resource-group "$RESOURCE_GROUP"
+    echo "✓ Authentication upgraded to V2"
+else
+    echo "✓ Authentication already at V2"
+fi
 echo ""
 
 echo "Configuring Azure AD authentication..."
