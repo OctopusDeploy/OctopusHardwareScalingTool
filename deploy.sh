@@ -130,8 +130,8 @@ WEB_APP_URL="https://$WEB_APP_NAME.azurewebsites.net"
 
 # Upgrade authentication to V2 if needed (required for az webapp auth microsoft update)
 echo "Checking authentication version..."
-AUTH_VERSION=$(az webapp auth show --name "$WEB_APP_NAME" --resource-group "$RESOURCE_GROUP" --query "configVersion" -o tsv 2>/dev/null || echo "v1")
-if [ "$AUTH_VERSION" != "v2" ]; then
+AUTH_NAME=$(az webapp auth show --name "$WEB_APP_NAME" --resource-group "$RESOURCE_GROUP" --query "name" -o tsv 2>/dev/null | grep -v WARNING || echo "authsettings")
+if [ "$AUTH_NAME" != "authsettingsV2" ]; then
     echo "Upgrading authentication to V2..."
     az webapp auth config-version upgrade \
         --name "$WEB_APP_NAME" \
