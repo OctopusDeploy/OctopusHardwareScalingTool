@@ -125,8 +125,7 @@ az webapp auth microsoft update \
     --resource-group "$RESOURCE_GROUP" \
     --tenant-id "$AZURE_TENANT" \
     --client-id "$(az ad app create --display-name "$WEB_APP_NAME-auth" --sign-in-audience AzureADMyOrg --query appId -o tsv)" \
-    --allowed-audiences "$WEB_APP_URL" \
-    --token-store true
+    --allowed-audiences "$WEB_APP_URL"
 echo "✓ Azure AD authentication configured"
 echo ""
 

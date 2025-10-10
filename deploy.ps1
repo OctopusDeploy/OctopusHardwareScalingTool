@@ -124,8 +124,7 @@ az webapp auth microsoft update `
     --resource-group $RESOURCE_GROUP `
     --tenant-id $AZURE_TENANT `
     --client-id $appId `
-    --allowed-audiences $WEB_APP_URL `
-    --token-store true
+    --allowed-audiences $WEB_APP_URL
 Write-Host "✓ Azure AD authentication configured" -ForegroundColor Green
 Write-Host ""
 
