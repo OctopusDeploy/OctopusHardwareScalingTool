@@ -119,6 +119,14 @@ echo ""
 WEB_APP_ID=$(az webapp show --name "$WEB_APP_NAME" --resource-group "$RESOURCE_GROUP" --query id -o tsv)
 WEB_APP_URL="https://$WEB_APP_NAME.azurewebsites.net"
 
+# Upgrade authentication to V2 (required for az webapp auth microsoft update)
+echo "Upgrading authentication to V2..."
+az webapp auth config-version upgrade \
+    --name "$WEB_APP_NAME" \
+    --resource-group "$RESOURCE_GROUP"
+echo "✓ Authentication upgraded to V2"
+echo ""
+
 echo "Configuring Azure AD authentication..."
 az webapp auth microsoft update \
     --name "$WEB_APP_NAME" \

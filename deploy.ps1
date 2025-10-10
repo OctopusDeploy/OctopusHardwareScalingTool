@@ -117,6 +117,14 @@ Write-Host ""
 # Get Web App details for AAD configuration
 $WEB_APP_URL = "https://$WEB_APP_NAME.azurewebsites.net"
 
+# Upgrade authentication to V2 (required for az webapp auth microsoft update)
+Write-Host "Upgrading authentication to V2..." -ForegroundColor Yellow
+az webapp auth config-version upgrade `
+    --name $WEB_APP_NAME `
+    --resource-group $RESOURCE_GROUP
+Write-Host "✓ Authentication upgraded to V2" -ForegroundColor Green
+Write-Host ""
+
 Write-Host "Configuring Azure AD authentication..." -ForegroundColor Yellow
 $appId = az ad app create --display-name "$WEB_APP_NAME-auth" --sign-in-audience AzureADMyOrg --query appId -o tsv
 az webapp auth microsoft update `
