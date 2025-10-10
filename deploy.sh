@@ -100,7 +100,7 @@ az webapp create \
     --name "$WEB_APP_NAME" \
     --resource-group "$RESOURCE_GROUP" \
     --plan "$APP_SERVICE_PLAN" \
-    --runtime "DOTNETCORE:9.0"
+    --runtime "DOTNETCORE|9.0"
 echo "✓ Web App created"
 echo ""
 
@@ -113,14 +113,22 @@ az webapp config set \
 echo "✓ WebSockets enabled"
 echo ""
 
+# Set startup command for Linux App Service
+echo "Setting startup command..."
+az webapp config set \
+    --name "$WEB_APP_NAME" \
+    --resource-group "$RESOURCE_GROUP" \
+    --startup-file "dotnet OctopusHardwareScalingTool.dll"
+echo "✓ Startup command configured"
+echo ""
+
 # Configure Web App settings
 echo "Configuring Web App settings..."
 az webapp config appsettings set \
     --name "$WEB_APP_NAME" \
     --resource-group "$RESOURCE_GROUP" \
     --settings \
-        ASPNETCORE_ENVIRONMENT="Production" \
-        WEBSITE_RUN_FROM_PACKAGE="1"
+        ASPNETCORE_ENVIRONMENT="Production"
 echo "✓ App settings configured"
 echo ""
 

@@ -99,7 +99,7 @@ az webapp create `
     --name $WEB_APP_NAME `
     --resource-group $RESOURCE_GROUP `
     --plan $APP_SERVICE_PLAN `
-    --runtime "DOTNETCORE:9.0"
+    --runtime "DOTNETCORE|9.0"
 Write-Host "✓ Web App created" -ForegroundColor Green
 Write-Host ""
 
@@ -112,14 +112,22 @@ az webapp config set `
 Write-Host "✓ WebSockets enabled" -ForegroundColor Green
 Write-Host ""
 
+# Set startup command for Linux App Service
+Write-Host "Setting startup command..." -ForegroundColor Yellow
+az webapp config set `
+    --name $WEB_APP_NAME `
+    --resource-group $RESOURCE_GROUP `
+    --startup-file "dotnet OctopusHardwareScalingTool.dll"
+Write-Host "✓ Startup command configured" -ForegroundColor Green
+Write-Host ""
+
 # Configure Web App settings
 Write-Host "Configuring Web App settings..." -ForegroundColor Yellow
 az webapp config appsettings set `
     --name $WEB_APP_NAME `
     --resource-group $RESOURCE_GROUP `
     --settings `
-        ASPNETCORE_ENVIRONMENT="Production" `
-        WEBSITE_RUN_FROM_PACKAGE="1"
+        ASPNETCORE_ENVIRONMENT="Production"
 Write-Host "✓ App settings configured" -ForegroundColor Green
 Write-Host ""
 
