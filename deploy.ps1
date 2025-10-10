@@ -6,7 +6,6 @@ $ErrorActionPreference = "Stop"
 # Configuration
 $AZURE_SUBSCRIPTION = "a64630ce-fe4a-4d9d-92f2-3f770daa7d54"
 $AZURE_TENANT = "3d13e379-e666-469e-ac38-ec6fd61c1166"
-$ACCESS_GROUP_ID = "bead26f3-a84d-459f-9443-f1609a37a62f"
 $RESOURCE_GROUP = "rg-octopus-hardware-calculator"
 $LOCATION = "australiaeast"
 $APP_SERVICE_PLAN = "plan-octopus-hardware-calculator"
@@ -130,13 +129,6 @@ az webapp auth microsoft update `
 Write-Host "✓ Azure AD authentication configured" -ForegroundColor Green
 Write-Host ""
 
-# Configure access restrictions (group-based)
-Write-Host "Configuring access restrictions..." -ForegroundColor Yellow
-Write-Host "NOTE: Group-based access control needs to be configured in Azure Portal" -ForegroundColor Cyan
-Write-Host "      Navigate to: Authentication > Require assignment > Add users/groups" -ForegroundColor Cyan
-Write-Host "      Add group ID: $ACCESS_GROUP_ID" -ForegroundColor Cyan
-Write-Host ""
-
 # Build and publish the application
 Write-Host "Building application..." -ForegroundColor Yellow
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -178,9 +170,9 @@ Write-Host "Resource Group: $RESOURCE_GROUP" -ForegroundColor Green
 Write-Host "App Service: $WEB_APP_NAME" -ForegroundColor Green
 Write-Host ""
 Write-Host "Next Steps:" -ForegroundColor Yellow
-Write-Host "1. Complete Azure AD group assignment in Azure Portal"
-Write-Host "2. Test the application at $WEB_APP_URL"
-Write-Host "3. Configure custom domain if needed"
+Write-Host "1. Test the application at $WEB_APP_URL"
+Write-Host "2. Configure custom domain if needed"
+Write-Host "3. Configure Azure AD group assignment if required"
 Write-Host ""
 Write-Host "To view logs:" -ForegroundColor Yellow
 Write-Host "  az webapp log tail --name $WEB_APP_NAME --resource-group $RESOURCE_GROUP"

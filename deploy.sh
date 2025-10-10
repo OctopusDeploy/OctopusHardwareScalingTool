@@ -7,7 +7,6 @@ set -e
 # Configuration
 AZURE_SUBSCRIPTION="a64630ce-fe4a-4d9d-92f2-3f770daa7d54"
 AZURE_TENANT="3d13e379-e666-469e-ac38-ec6fd61c1166"
-ACCESS_GROUP_ID="bead26f3-a84d-459f-9443-f1609a37a62f"
 RESOURCE_GROUP="rg-octopus-hardware-calculator"
 LOCATION="australiaeast"
 APP_SERVICE_PLAN="plan-octopus-hardware-calculator"
@@ -131,13 +130,6 @@ az webapp auth microsoft update \
 echo "✓ Azure AD authentication configured"
 echo ""
 
-# Configure access restrictions (group-based)
-echo "Configuring access restrictions..."
-echo "NOTE: Group-based access control needs to be configured in Azure Portal"
-echo "      Navigate to: Authentication > Require assignment > Add users/groups"
-echo "      Add group ID: $ACCESS_GROUP_ID"
-echo ""
-
 # Build and publish the application
 echo "Building application..."
 cd "$(dirname "$0")"
@@ -178,9 +170,9 @@ echo "Resource Group: $RESOURCE_GROUP"
 echo "App Service: $WEB_APP_NAME"
 echo ""
 echo "Next Steps:"
-echo "1. Complete Azure AD group assignment in Azure Portal"
-echo "2. Test the application at $WEB_APP_URL"
-echo "3. Configure custom domain if needed"
+echo "1. Test the application at $WEB_APP_URL"
+echo "2. Configure custom domain if needed"
+echo "3. Configure Azure AD group assignment if required"
 echo ""
 echo "To view logs:"
 echo "  az webapp log tail --name $WEB_APP_NAME --resource-group $RESOURCE_GROUP"
