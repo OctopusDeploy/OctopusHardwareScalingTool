@@ -103,6 +103,15 @@ az webapp create `
 Write-Host "✓ Web App created" -ForegroundColor Green
 Write-Host ""
 
+# Enable WebSockets (required for Blazor Server SignalR)
+Write-Host "Enabling WebSockets..." -ForegroundColor Yellow
+az webapp config set `
+    --name $WEB_APP_NAME `
+    --resource-group $RESOURCE_GROUP `
+    --web-sockets-enabled true
+Write-Host "✓ WebSockets enabled" -ForegroundColor Green
+Write-Host ""
+
 # Configure Web App settings
 Write-Host "Configuring Web App settings..." -ForegroundColor Yellow
 az webapp config appsettings set `

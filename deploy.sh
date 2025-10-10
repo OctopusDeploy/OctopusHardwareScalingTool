@@ -104,6 +104,15 @@ az webapp create \
 echo "✓ Web App created"
 echo ""
 
+# Enable WebSockets (required for Blazor Server SignalR)
+echo "Enabling WebSockets..."
+az webapp config set \
+    --name "$WEB_APP_NAME" \
+    --resource-group "$RESOURCE_GROUP" \
+    --web-sockets-enabled true
+echo "✓ WebSockets enabled"
+echo ""
+
 # Configure Web App settings
 echo "Configuring Web App settings..."
 az webapp config appsettings set \
