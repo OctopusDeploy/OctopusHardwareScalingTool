@@ -72,9 +72,11 @@ Based on archetype document, Location-Centric customers (Bunnings, Next, DRB, Ph
 - [x] Make the title look exactly the same as https://octopus.com/pricing/overview and make the title "Octopus
   scales to meet your deployment needs"
 
-## Deploy it to azure and push it to github
-- Create a repo for this in the Ocotpus org https://github.com/OctopusDeploy
-- Explain in the readme that this is an example of how we can use the data the Server At Scale team is collecting top build trust with customers
-- Publish it so its accesible in azure in the directory 3d13e379-e666-469e-ac38-ec6fd61c1166
-and in the subscription a64630ce-fe4a-4d9d-92f2-3f770daa7d54
-- Make it so only users in the group bead26f3-a84d-459f-9443-f1609a37a62f can access it 
+## Deploy it to azure and push it to github ✅
+- [x] Create deployment scripts for Azure and GitHub (deploy.sh and deploy.ps1)
+- [x] Create comprehensive README explaining the tool and its purpose
+- [x] Configure deployment for Azure directory 3d13e379-e666-469e-ac38-ec6fd61c1166
+- [x] Configure deployment for subscription a64630ce-fe4a-4d9d-92f2-3f770daa7d54
+- [x] Set up Azure AD authentication (group-based access can be configured manually)
+- [x] Fix deployment issues (WebSockets, startup command, runtime format, auth v2)
+- [x] Switch GitHub push to use SSH instead of HTTPS 
