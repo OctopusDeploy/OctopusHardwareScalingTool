@@ -70,7 +70,7 @@ if [ "$CREATE_REPO" = "y" ]; then
 
     # Push code to GitHub
     echo "Pushing code to GitHub..."
-    git remote add origin "https://github.com/$GITHUB_ORG/$GITHUB_REPO.git" 2>/dev/null || true
+    git remote add origin "git@github.com:$GITHUB_ORG/$GITHUB_REPO.git" 2>/dev/null || true
     git push -u origin main
     echo "✓ Code pushed to GitHub"
     echo ""

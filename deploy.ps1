@@ -69,7 +69,7 @@ if ($createRepo -eq "y") {
 
     # Push code to GitHub
     Write-Host "Pushing code to GitHub..." -ForegroundColor Yellow
-    git remote add origin "https://github.com/$GITHUB_ORG/$GITHUB_REPO.git" 2>$null
+    git remote add origin "git@github.com:$GITHUB_ORG/$GITHUB_REPO.git" 2>$null
     git push -u origin main
     Write-Host "✓ Code pushed to GitHub" -ForegroundColor Green
     Write-Host ""
