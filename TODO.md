@@ -64,3 +64,10 @@ Based on archetype document, Location-Centric customers (Bunnings, Next, DRB, Ph
 - [x] Add the same header as https://octopus.com/pricing/overview
 - [x] Add tabs for Octopus Server and Octopus Cloud like on the https://octopus.com/pricing/overview page the current experience is for the server tab
 - [x] Have a very similar experience however instead of allowing the customer to select the number of cores they want to assume a core costs $100 per month and the cloud platform will provide all the cores up to a specific budget they can set per month
+- [x] add the same describe your deployment scenario section as the server tab
+
+## Make it look like this page is actually on Octopus.com ✅
+- [x] Add exactly the same nav bar  as https://octopus.com/pricing/overview
+- [x] make the server and cloud tabs look exactly the same as https://octopus.com/pricing/overview
+- [x] Make the title look exactly the same as https://octopus.com/pricing/overview and make the title "Octopus
+  scales to meet your deployment needs"

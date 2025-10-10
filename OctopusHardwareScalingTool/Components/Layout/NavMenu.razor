@@ -1,29 +1,162 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">OctopusHardwareScalingTool</a>
+@implements IDisposable
+
+<nav class="octopus-nav">
+    <div class="nav-container">
+        <div class="nav-left">
+            <!-- Logo -->
+            <a href="/" class="nav-logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#0d80d8" d="M20 4C11.2 4 4 11.2 4 20s7.2 16 16 16 16-7.2 16-16S28.8 4 20 4zm0 28c-6.6 0-12-5.4-12-12s5.4-12 12-12 12 5.4 12 12-5.4 12-12 12z"/>
+                    <circle fill="#0d80d8" cx="20" cy="20" r="8"/>
+                </svg>
+                <span>Octopus Deploy</span>
+            </a>
+
+            <!-- Main Menu -->
+            <div class="nav-menu">
+                <div class="nav-item dropdown @(solutionsOpen ? "open" : "")">
+                    <button class="nav-link dropdown-toggle" @onclick="ToggleSolutions" @onfocusout="HandleFocusOut">
+                        Solutions
+                    </button>
+                    @if (solutionsOpen)
+                    {
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item">Kubernetes</a>
+                            <a href="#" class="dropdown-item">Platform Hub</a>
+                            <a href="#" class="dropdown-item">Environment Promotion</a>
+                            <a href="#" class="dropdown-item">AI Assistant</a>
+                            <a href="#" class="dropdown-item">Runbooks</a>
+                        </div>
+                    }
+                </div>
+
+                <div class="nav-item">
+                    <a href="/pricing/overview" class="nav-link active">Pricing</a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="/enterprise" class="nav-link">Enterprise</a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="/docs" class="nav-link">Docs</a>
+                </div>
+
+                <div class="nav-item dropdown @(resourcesOpen ? "open" : "")">
+                    <button class="nav-link dropdown-toggle" @onclick="ToggleResources" @onfocusout="HandleFocusOut">
+                        Resources
+                    </button>
+                    @if (resourcesOpen)
+                    {
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item">Customer Stories</a>
+                            <a href="#" class="dropdown-item">Downloads</a>
+                            <a href="#" class="dropdown-item">Webinars</a>
+                            <a href="#" class="dropdown-item">Blog</a>
+                        </div>
+                    }
+                </div>
+
+                <div class="nav-item dropdown @(companyOpen ? "open" : "")">
+                    <button class="nav-link dropdown-toggle" @onclick="ToggleCompany" @onfocusout="HandleFocusOut">
+                        Company
+                    </button>
+                    @if (companyOpen)
+                    {
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item">Careers</a>
+                            <a href="#" class="dropdown-item">About Us</a>
+                            <a href="#" class="dropdown-item">Contact</a>
+                            <a href="#" class="dropdown-item">Events</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <a href="/signin" class="nav-link signin">Sign in</a>
+            <a href="/start?location=nav-bar" class="btn btn-primary nav-cta">Try it free</a>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" @onclick="ToggleMobileMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </div>
-</div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
+    <!-- Mobile Menu -->
+    @if (mobileMenuOpen)
+    {
+        <div class="mobile-menu">
+            <div class="mobile-nav-items">
+                <a href="#" class="mobile-nav-link">Solutions</a>
+                <a href="/pricing/overview" class="mobile-nav-link active">Pricing</a>
+                <a href="/enterprise" class="mobile-nav-link">Enterprise</a>
+                <a href="/docs" class="mobile-nav-link">Docs</a>
+                <a href="#" class="mobile-nav-link">Resources</a>
+                <a href="#" class="mobile-nav-link">Company</a>
+                <hr class="mobile-divider" />
+                <a href="/signin" class="mobile-nav-link">Sign in</a>
+                <a href="/start?location=nav-bar" class="btn btn-primary mobile-cta">Try it free</a>
+            </div>
         </div>
+    }
+</nav>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+@code {
+    private bool solutionsOpen = false;
+    private bool resourcesOpen = false;
+    private bool companyOpen = false;
+    private bool mobileMenuOpen = false;
+    private Timer? closeTimer;
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+    private void ToggleSolutions()
+    {
+        solutionsOpen = !solutionsOpen;
+        resourcesOpen = false;
+        companyOpen = false;
+    }
+
+    private void ToggleResources()
+    {
+        resourcesOpen = !resourcesOpen;
+        solutionsOpen = false;
+        companyOpen = false;
+    }
+
+    private void ToggleCompany()
+    {
+        companyOpen = !companyOpen;
+        solutionsOpen = false;
+        resourcesOpen = false;
+    }
+
+    private void ToggleMobileMenu()
+    {
+        mobileMenuOpen = !mobileMenuOpen;
+    }
+
+    private void HandleFocusOut()
+    {
+        // Delay closing to allow clicking on dropdown items
+        closeTimer?.Dispose();
+        closeTimer = new Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                solutionsOpen = false;
+                resourcesOpen = false;
+                companyOpen = false;
+                StateHasChanged();
+            });
+        }, null, 200, Timeout.Infinite);
+    }
+
+    public void Dispose()
+    {
+        closeTimer?.Dispose();
+    }
+}

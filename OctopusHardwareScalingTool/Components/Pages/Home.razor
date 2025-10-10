@@ -8,23 +8,21 @@
     <header class="octopus-header">
         <div class="header-container">
             <div class="header-content">
-                <h1>Octopus Deploy Hardware Sizing Calculator</h1>
-                <p>Size your infrastructure correctly for your deployment needs</p>
+                <h1>Octopus scales to meet your deployment needs</h1>
+                <p>Size your infrastructure correctly for optimal deployment performance</p>
             </div>
         </div>
     </header>
 
     <!-- Tab Navigation -->
-    <div class="pricing-tabs-container">
+    <div class="pricing-tabs-wrapper">
         <div class="container">
-            <div class="pricing-tabs">
-                <button class="pricing-tab @(activeTab == "server" ? "active" : "")" @onclick="@(() => SwitchTab("server"))">
-                    <span class="tab-icon">🖥️</span>
-                    Octopus Server
-                </button>
-                <button class="pricing-tab @(activeTab == "cloud" ? "active" : "")" @onclick="@(() => SwitchTab("cloud"))">
-                    <span class="tab-icon">☁️</span>
+            <div class="pricing-tabs-octopus">
+                <button class="pricing-tab-octopus @(activeTab == "cloud" ? "active cloud-active" : "")" @onclick="@(() => SwitchTab("cloud"))">
                     Octopus Cloud
+                </button>
+                <button class="pricing-tab-octopus @(activeTab == "server" ? "active server-active" : "")" @onclick="@(() => SwitchTab("server"))">
+                    Octopus Server
                 </button>
             </div>
         </div>
@@ -355,8 +353,81 @@
             else if (activeTab == "cloud")
             {
                 <!-- Cloud Tab Content -->
+                <!-- Step 1: Describe Your Deployment Scenario -->
                 <div class="calculator-card">
-                    <h2>Octopus Cloud - Budget-Based Sizing</h2>
+                    <h2>Step 1: Describe Your Deployment Scenario</h2>
+                    <p class="section-intro">Tell us about your deployment infrastructure and requirements.</p>
+
+                    <div class="input-section">
+                        <div class="input-group">
+                            <label for="cloudNumLocations" class="form-label">
+                                <strong>Number of Locations/Stores</strong>
+                                <span class="help-text">How many physical locations do you deploy to?</span>
+                            </label>
+                            <input type="range"
+                                   id="cloudNumLocations"
+                                   class="form-range"
+                                   min="1"
+                                   max="500"
+                                   step="1"
+                                   @bind="selectedLocations"
+                                   @bind:event="oninput" />
+                            <div class="range-value">@selectedLocations locations</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="cloudDevicesPerLocation" class="form-label">
+                                <strong>Devices per Location</strong>
+                                <span class="help-text">Average number of devices (POS, servers, etc.) at each location</span>
+                            </label>
+                            <input type="range"
+                                   id="cloudDevicesPerLocation"
+                                   class="form-range"
+                                   min="1"
+                                   max="50"
+                                   step="1"
+                                   @bind="selectedDevicesPerLocation"
+                                   @bind:event="oninput" />
+                            <div class="range-value">@selectedDevicesPerLocation devices</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="cloudApplicationsDeployed" class="form-label">
+                                <strong>Applications to Deploy</strong>
+                                <span class="help-text">How many applications are deployed together?</span>
+                            </label>
+                            <input type="range"
+                                   id="cloudApplicationsDeployed"
+                                   class="form-range"
+                                   min="1"
+                                   max="10"
+                                   step="1"
+                                   @bind="selectedApplications"
+                                   @bind:event="oninput" />
+                            <div class="range-value">@selectedApplications applications</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="cloudDeploymentWindow" class="form-label">
+                                <strong>Deployment Window</strong>
+                                <span class="help-text">Hours available for deployments</span>
+                            </label>
+                            <input type="range"
+                                   id="cloudDeploymentWindow"
+                                   class="form-range"
+                                   min="1"
+                                   max="8"
+                                   step="0.5"
+                                   @bind="selectedDeploymentWindow"
+                                   @bind:event="oninput" />
+                            <div class="range-value">@selectedDeploymentWindow hours</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Budget-Based Sizing -->
+                <div class="calculator-card">
+                    <h2>Step 2: Set Your Cloud Budget</h2>
                     <p class="section-intro">
                         With Octopus Cloud, we automatically scale to meet your needs.
                         Set your monthly budget and we'll show you what performance to expect.
