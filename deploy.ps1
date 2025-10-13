@@ -50,6 +50,11 @@ Write-Host ""
 $createRepo = Read-Host "Do you want to create a GitHub repository in the OctopusDeploy organization? (y/n)"
 
 if ($createRepo -eq "y") {
+    # Configure GitHub CLI to use SSH for git operations
+    Write-Host "Configuring GitHub CLI to use SSH..." -ForegroundColor Yellow
+    gh config set git_protocol ssh
+    Write-Host "✓ GitHub CLI configured for SSH" -ForegroundColor Green
+
     Write-Host "Creating GitHub repository..." -ForegroundColor Yellow
 
     # Check if repo already exists
@@ -158,6 +163,16 @@ az webapp auth microsoft update `
     --client-id $appId `
     --allowed-audiences $WEB_APP_URL
 Write-Host "✓ Azure AD authentication configured" -ForegroundColor Green
+Write-Host ""
+
+# Enable authentication and require login
+Write-Host "Enabling authentication enforcement..." -ForegroundColor Yellow
+az webapp auth update `
+    --name $WEB_APP_NAME `
+    --resource-group $RESOURCE_GROUP `
+    --enabled true `
+    --action LoginWithAzureActiveDirectory
+Write-Host "✓ Authentication enforcement enabled" -ForegroundColor Green
 Write-Host ""
 
 # Build and publish the application

@@ -52,6 +52,11 @@ echo "Do you want to create a GitHub repository in the OctopusDeploy organizatio
 read -r CREATE_REPO
 
 if [ "$CREATE_REPO" = "y" ]; then
+    # Configure GitHub CLI to use SSH for git operations
+    echo "Configuring GitHub CLI to use SSH..."
+    gh config set git_protocol ssh
+    echo "✓ GitHub CLI configured for SSH"
+
     echo "Creating GitHub repository..."
 
     # Check if repo already exists
@@ -158,6 +163,16 @@ az webapp auth microsoft update \
     --client-id "$(az ad app create --display-name "$WEB_APP_NAME-auth" --sign-in-audience AzureADMyOrg --query appId -o tsv)" \
     --allowed-audiences "$WEB_APP_URL"
 echo "✓ Azure AD authentication configured"
+echo ""
+
+# Enable authentication and require login
+echo "Enabling authentication enforcement..."
+az webapp auth update \
+    --name "$WEB_APP_NAME" \
+    --resource-group "$RESOURCE_GROUP" \
+    --enabled true \
+    --action LoginWithAzureActiveDirectory
+echo "✓ Authentication enforcement enabled"
 echo ""
 
 # Build and publish the application
