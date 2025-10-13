@@ -46,21 +46,53 @@ This gives Claude direct browser control - **do this first!**
 
 ### Step 1: Install the MCP Playwright Server
 
+There are **three options** for MCP Playwright servers. Choose one:
+
+#### Option 1: Using Claude Code CLI (Recommended - Easiest)
+
 ```bash
-# Install globally with npx (recommended)
-npm install -g @modelcontextprotocol/server-playwright
+# Official Microsoft Playwright MCP (lightweight, official)
+claude mcp add playwright -s user -- npx -y @playwright/mcp@latest
 ```
 
-Or check the latest installation method:
-- GitHub: https://github.com/modelcontextprotocol/servers
-- NPM: https://www.npmjs.com/package/@modelcontextprotocol/server-playwright
+Or with more features:
+```bash
+# ExecuteAutomation version (includes screenshot, code generation, scraping)
+claude mcp add playwright -s user -- npx -y @executeautomation/playwright-mcp-server
+```
+
+This automatically configures Claude Code - skip to Step 3!
+
+#### Option 2: Manual npm Installation
+
+```bash
+# Official Microsoft package
+npm install -g @playwright/mcp
+
+# Or ExecuteAutomation version
+npm install -g @executeautomation/playwright-mcp-server
+```
+
+#### Option 3: Use with npx (No Installation)
+
+No installation needed - configure directly in Step 2 using `npx -y @playwright/mcp@latest`
+
+**Package Information:**
+- **@playwright/mcp** - Official Microsoft package (GitHub: microsoft/playwright-mcp)
+- **@executeautomation/playwright-mcp-server** - Community package with extra features
+- NPM Links:
+  - https://www.npmjs.com/package/@playwright/mcp
+  - https://www.npmjs.com/package/@executeautomation/playwright-mcp-server
 
 ### Step 2: Configure Claude Code to Use MCP Server
 
-Add the MCP server to your Claude Code configuration:
+**Skip this step if you used Option 1 (claude mcp add) in Step 1!**
 
-**Location**: `~/.claude/config.json` or wherever your Claude Code config is
+For manual configuration, add the MCP server to your Claude Code configuration:
 
+**Location**: `~/.claude/config.json` (or wherever your Claude Code config is)
+
+**Option A: Using npx (Recommended - No Installation Required)**
 ```json
 {
   "mcpServers": {
@@ -68,19 +100,34 @@ Add the MCP server to your Claude Code configuration:
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-playwright"
+        "@playwright/mcp@latest"
       ]
     }
   }
 }
 ```
 
-**Alternative if installed globally:**
+**Option B: Using ExecuteAutomation package with npx**
 ```json
 {
   "mcpServers": {
     "playwright": {
-      "command": "mcp-server-playwright"
+      "command": "npx",
+      "args": [
+        "-y",
+        "@executeautomation/playwright-mcp-server"
+      ]
+    }
+  }
+}
+```
+
+**Option C: If installed globally**
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "playwright-mcp"
     }
   }
 }
@@ -540,8 +587,11 @@ cd tests/e2e && pnpm test:ui
 ## Checklist
 
 ### Part 1: MCP Server (PRIORITY)
-- [ ] Installed MCP Playwright server: `npm install -g @modelcontextprotocol/server-playwright`
-- [ ] Updated `~/.claude/config.json` with MCP server config
+- [ ] Installed MCP Playwright server using one of:
+  - `claude mcp add playwright -s user -- npx -y @playwright/mcp@latest` (easiest)
+  - OR `npm install -g @playwright/mcp`
+  - OR `npm install -g @executeautomation/playwright-mcp-server`
+- [ ] Updated `~/.claude/config.json` with MCP server config (if not using claude mcp add)
 - [ ] Restarted Claude Code
 - [ ] Verified MCP tools available (ask Claude to take a screenshot)
 
@@ -568,7 +618,9 @@ cd tests/e2e && pnpm test:ui
 **Issue: MCP tools not showing up**
 - Check `~/.claude/config.json` is correct
 - Restart Claude Code completely
-- Verify installation: `npx @modelcontextprotocol/server-playwright --version`
+- Verify package exists: `npx @playwright/mcp@latest --version`
+- Try alternate package: `npx @executeautomation/playwright-mcp-server --version`
+- Check Claude Code MCP status: `claude mcp list`
 
 **Issue: "Cannot connect to browser"**
 - Make sure app is running at http://localhost:5008
@@ -598,9 +650,11 @@ cd tests/e2e && pnpm test:ui
 
 ## Learning Resources
 
-- **MCP Playwright**: https://github.com/modelcontextprotocol/servers
+- **Official Microsoft Playwright MCP**: https://github.com/microsoft/playwright-mcp
+- **ExecuteAutomation MCP Playwright**: https://github.com/executeautomation/mcp-playwright
 - **Playwright Docs**: https://playwright.dev
 - **MCP Protocol**: https://modelcontextprotocol.io
+- **Claude Code MCP Guide**: https://docs.claude.com/en/docs/claude-code/mcp
 
 ---
 
