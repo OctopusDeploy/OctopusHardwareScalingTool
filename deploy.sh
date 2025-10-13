@@ -171,7 +171,7 @@ az webapp auth update \
     --name "$WEB_APP_NAME" \
     --resource-group "$RESOURCE_GROUP" \
     --enabled true \
-    --action LoginWithAzureActiveDirectory
+    --unauthenticated-client-action RedirectToLoginPage
 echo "✓ Authentication enforcement enabled"
 echo ""
 
