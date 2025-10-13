@@ -11,8 +11,6 @@ RESOURCE_GROUP="rg-octopus-hardware-calculator"
 LOCATION="australiaeast"
 APP_SERVICE_PLAN="plan-octopus-hardware-calculator"
 WEB_APP_NAME="octopus-hardware-calculator"
-GITHUB_ORG="OctopusDeploy"
-GITHUB_REPO="OctopusHardwareScalingTool"
 
 echo "=========================================="
 echo "Octopus Hardware Calculator Deployment"
@@ -24,11 +22,6 @@ echo "Checking prerequisites..."
 
 if ! command -v az &> /dev/null; then
     echo "ERROR: Azure CLI is not installed. Please install it from https://docs.microsoft.com/en-us/cli/azure/install-azure-cli"
-    exit 1
-fi
-
-if ! command -v gh &> /dev/null; then
-    echo "ERROR: GitHub CLI is not installed. Please install it from https://cli.github.com/"
     exit 1
 fi
 
@@ -46,40 +39,6 @@ az login --tenant "$AZURE_TENANT"
 az account set --subscription "$AZURE_SUBSCRIPTION"
 echo "✓ Logged in to Azure"
 echo ""
-
-# Check if user wants to create GitHub repo
-echo "Do you want to create a GitHub repository in the OctopusDeploy organization? (y/n)"
-read -r CREATE_REPO
-
-if [ "$CREATE_REPO" = "y" ]; then
-    # Configure GitHub CLI to use SSH for git operations
-    echo "Configuring GitHub CLI to use SSH..."
-    gh config set git_protocol ssh
-    echo "✓ GitHub CLI configured for SSH"
-
-    echo "Creating GitHub repository..."
-
-    # Check if repo already exists
-    if gh repo view "$GITHUB_ORG/$GITHUB_REPO" &> /dev/null; then
-        echo "Repository $GITHUB_ORG/$GITHUB_REPO already exists"
-    else
-        # Create the repository
-        gh repo create "$GITHUB_ORG/$GITHUB_REPO" \
-            --public \
-            --description "Interactive hardware sizing calculator for Octopus Deploy infrastructure" \
-            --source=. \
-            --remote=origin
-
-        echo "✓ GitHub repository created: https://github.com/$GITHUB_ORG/$GITHUB_REPO"
-    fi
-
-    # Push code to GitHub
-    echo "Pushing code to GitHub..."
-    git remote add origin "git@github.com:$GITHUB_ORG/$GITHUB_REPO.git" 2>/dev/null || true
-    git push -u origin main
-    echo "✓ Code pushed to GitHub"
-    echo ""
-fi
 
 # Create Azure resources
 echo "Creating Azure Resource Group..."
@@ -138,7 +97,6 @@ echo "✓ App settings configured"
 echo ""
 
 # Get Web App details for AAD configuration
-WEB_APP_ID=$(az webapp show --name "$WEB_APP_NAME" --resource-group "$RESOURCE_GROUP" --query id -o tsv)
 WEB_APP_URL="https://$WEB_APP_NAME.azurewebsites.net"
 
 # Upgrade authentication to V2 if needed (required for az webapp auth microsoft update)
@@ -155,12 +113,26 @@ else
 fi
 echo ""
 
+echo "Creating Azure AD app registration..."
+APP_ID=$(az ad app create --display-name "$WEB_APP_NAME-auth" --sign-in-audience AzureADMyOrg --query appId -o tsv)
+echo "✓ Azure AD app created with ID: $APP_ID"
+
+echo "Enabling ID token issuance for Azure AD app..."
+az ad app update --id "$APP_ID" --enable-id-token-issuance true
+echo "✓ ID token issuance enabled"
+
+echo "Adding reply URLs for Azure AD app..."
+az ad app update --id "$APP_ID" --web-redirect-uris \
+    "https://$WEB_APP_NAME.azurewebsites.net/.auth/login/aad/callback" \
+    "https://$WEB_APP_NAME.azurewebsites.net"
+echo "✓ Reply URLs configured"
+
 echo "Configuring Azure AD authentication..."
 az webapp auth microsoft update \
     --name "$WEB_APP_NAME" \
     --resource-group "$RESOURCE_GROUP" \
     --tenant-id "$AZURE_TENANT" \
-    --client-id "$(az ad app create --display-name "$WEB_APP_NAME-auth" --sign-in-audience AzureADMyOrg --query appId -o tsv)" \
+    --client-id "$APP_ID" \
     --allowed-audiences "$WEB_APP_URL"
 echo "✓ Azure AD authentication configured"
 echo ""

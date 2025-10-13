@@ -154,8 +154,21 @@ if ($AUTH_NAME -ne "authsettingsV2") {
 }
 Write-Host ""
 
-Write-Host "Configuring Azure AD authentication..." -ForegroundColor Yellow
+Write-Host "Creating Azure AD app registration..." -ForegroundColor Yellow
 $appId = az ad app create --display-name "$WEB_APP_NAME-auth" --sign-in-audience AzureADMyOrg --query appId -o tsv
+Write-Host "✓ Azure AD app created with ID: $appId" -ForegroundColor Green
+
+Write-Host "Enabling ID token issuance for Azure AD app..." -ForegroundColor Yellow
+az ad app update --id $appId --enable-id-token-issuance true
+Write-Host "✓ ID token issuance enabled" -ForegroundColor Green
+
+Write-Host "Adding reply URLs for Azure AD app..." -ForegroundColor Yellow
+az ad app update --id $appId --web-redirect-uris `
+    "https://$WEB_APP_NAME.azurewebsites.net/.auth/login/aad/callback" `
+    "https://$WEB_APP_NAME.azurewebsites.net"
+Write-Host "✓ Reply URLs configured" -ForegroundColor Green
+
+Write-Host "Configuring Azure AD authentication..." -ForegroundColor Yellow
 az webapp auth microsoft update `
     --name $WEB_APP_NAME `
     --resource-group $RESOURCE_GROUP `
