@@ -86,7 +86,7 @@ echo "Creating Azure Resource Group..."
 az group create \
     --name "$RESOURCE_GROUP" \
     --location "$LOCATION" \
-    --tags "project=OctopusHardwareCalculator" "team=ServerAtScale"
+    --tags "project=OctopusHardwareCalculator" "team=ExecutionsFoundations"
 echo "✓ Resource Group created"
 echo ""
 

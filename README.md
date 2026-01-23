@@ -4,7 +4,7 @@ An interactive web-based tool to help customers determine the right hardware spe
 
 ## Purpose
 
-This tool demonstrates how the **Server At Scale team's performance data** can be used to build customer trust and help them make informed decisions about their Octopus Deploy infrastructure. By collecting real-world performance metrics from large-scale deployments, we can provide accurate hardware sizing recommendations that ensure customers have the right resources for their specific needs.
+This tool demonstrates how the **Executions Foundations team's performance data** can be used to build customer trust and help them make informed decisions about their Octopus Deploy infrastructure. By collecting real-world performance metrics from large-scale deployments, we can provide accurate hardware sizing recommendations that ensure customers have the right resources for their specific needs.
 
 ## What It Does
 
@@ -88,7 +88,7 @@ See the [Deployment Guide](./docs/DEPLOYMENT.md) for manual deployment instructi
 
 ## Performance Data Sources
 
-The calculator uses performance data collected by the Server At Scale team from:
+The calculator uses performance data collected by the Executions Foundations team from:
 - Q3C2 Scenario testing (Application archetype)
 - Real customer deployment patterns
 - Performance benchmarks across various hardware configurations
@@ -133,9 +133,9 @@ The production deployment is restricted to members of the Azure AD group:
 
 ## Contributing
 
-This tool is maintained by the Server At Scale team. For questions or suggestions:
+This tool is maintained by the Executions Foundations team. For questions or suggestions:
 - Open an issue in this repository
-- Contact the Server At Scale team in Slack
+- Contact the Executions Foundations team in Slack
 
 ## License
 
@@ -143,4 +143,4 @@ Copyright © Octopus Deploy. All rights reserved.
 
 ## Acknowledgments
 
-Built with data and insights from the Server At Scale team's performance testing and customer deployment patterns.
+Built with data and insights from the Executions Foundations team's performance testing and customer deployment patterns.
