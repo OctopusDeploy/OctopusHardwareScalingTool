@@ -85,7 +85,7 @@ Write-Host "Creating Azure Resource Group..." -ForegroundColor Yellow
 az group create `
     --name $RESOURCE_GROUP `
     --location $LOCATION `
-    --tags "project=OctopusHardwareCalculator" "team=ServerAtScale"
+    --tags "project=OctopusHardwareCalculator" "team=ExecutionsFoundations"
 Write-Host "✓ Resource Group created" -ForegroundColor Green
 Write-Host ""
 
