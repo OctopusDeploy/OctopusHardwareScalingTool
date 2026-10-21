@@ -33,7 +33,7 @@ if ! command -v gh &> /dev/null; then
 fi
 
 if ! command -v dotnet &> /dev/null; then
-    echo "ERROR: .NET SDK is not installed. Please install .NET 9.0 or later"
+    echo "ERROR: .NET SDK is not installed. Please install .NET 10.0 or later"
     exit 1
 fi
 
@@ -105,7 +105,7 @@ az webapp create \
     --name "$WEB_APP_NAME" \
     --resource-group "$RESOURCE_GROUP" \
     --plan "$APP_SERVICE_PLAN" \
-    --runtime "DOTNETCORE|9.0"
+    --runtime "DOTNETCORE|10.0"
 echo "✓ Web App created"
 echo ""
 
