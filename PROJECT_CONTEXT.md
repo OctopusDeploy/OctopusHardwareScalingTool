@@ -4,7 +4,7 @@
 
 This is a Blazor Server application that provides an interactive calculator for Octopus Deploy customers to understand how parallel deployments and CPU cores affect deployment performance. The tool helps customers make informed decisions about hardware scaling.
 
-**Tech Stack:** .NET 9.0, Blazor Server, Bootstrap 5
+**Tech Stack:** .NET 10.0, Blazor Server, Bootstrap 5
 
 **Running:** http://localhost:5008 (via `dotnet run --project OctopusHardwareScalingTool/OctopusHardwareScalingTool.csproj`)
 
@@ -142,7 +142,7 @@ Four info cards explain key concepts:
 
 ## Dependencies
 
-- .NET 9.0 SDK
+- .NET 10.0 SDK
 - Bootstrap 5 (included in wwwroot/lib)
 - No external npm packages required
 

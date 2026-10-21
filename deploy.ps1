@@ -32,7 +32,7 @@ if (!(Get-Command gh -ErrorAction SilentlyContinue)) {
 }
 
 if (!(Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    Write-Host "ERROR: .NET SDK is not installed. Please install .NET 9.0 or later" -ForegroundColor Red
+    Write-Host "ERROR: .NET SDK is not installed. Please install .NET 10.0 or later" -ForegroundColor Red
     exit 1
 }
 
@@ -104,7 +104,7 @@ az webapp create `
     --name $WEB_APP_NAME `
     --resource-group $RESOURCE_GROUP `
     --plan $APP_SERVICE_PLAN `
-    --runtime "DOTNETCORE|9.0"
+    --runtime "DOTNETCORE|10.0"
 Write-Host "✓ Web App created" -ForegroundColor Green
 Write-Host ""
 

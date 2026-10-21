@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a **Blazor Server** application that provides an interactive calculator for Octopus Deploy customers to estimate deployment performance based on hardware configurations. The tool helps users understand how CPU cores and parallel deployments affect deployment times.
 
-**Tech Stack:** .NET 9.0, Blazor Server, Bootstrap 5
+**Tech Stack:** .NET 10.0, Blazor Server, Bootstrap 5
 
 ## Running the Application
 

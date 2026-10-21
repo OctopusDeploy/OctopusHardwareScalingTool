@@ -28,7 +28,7 @@ The Hardware Sizing Calculator helps customers:
 
 ## Technology Stack
 
-- **Framework**: Blazor Server (.NET 9.0)
+- **Framework**: Blazor Server (.NET 10.0)
 - **Rendering**: Interactive Server-side rendering
 - **Styling**: Custom CSS matching Octopus.com design system
 - **Hosting**: Azure App Service with Azure AD authentication
@@ -37,7 +37,7 @@ The Hardware Sizing Calculator helps customers:
 
 ### Prerequisites
 
-- .NET 9.0 SDK or later
+- .NET 10.0 SDK or later
 - Your favorite IDE (Visual Studio, Rider, or VS Code)
 
 ### Running Locally
